@@ -2,27 +2,34 @@
 {
     public static class Constant
     {
-        public const string Chips = @"Chips : ";
-        public const int StartingBigBlind = 500;
-        public const int StartingSmallBlind = 250;
-        public const int TicksForPlayerTurn = 10000000;
-        public const int StartingChips = 10000;
-        public const int NumberOfCardsOnBoard = 17;
-        public const int CardOffsetX = 10;
-        public const int CardOffsetY = 10;
-        public const int PanelX = 150;
-        public const int PanelY = 180;
-        public const int bot1HorizontalCardPosition = 15;
-        public const int bot1VerticalCardPosition = 420;
-        public const int bot2HorizontalCardPosition = 75;
-        public const int bot2VerticalCardPosition = 65;
-        public const int bot3HorizontalCardPosition = 590;
-        public const int bot3VerticalCardPosition = 25;
-        public const int bot4HorizontalCardPosition = 1115;
-        public const int bot4VerticalCardPosition = 65;
-        public const int bot5HorizontalCardPosition = 1160;
-        public const int bot5VerticalCardPosition = 420;
-        public const int StartingCenterCardX = 410;
-        public const int StartingCenterCardY = 265;
+        public const string CardPath = "..\\..\\Resources\\Cards";
+        public const string CardBack = "..\\..\\Resources\\Back\\Back.png";
+        public const string CardExtension = ".png";
+        public const int DeckSize = 52;
+        public const int MaxNumberOfThrownCards = 17;
+        public const int ShuffleTimes = 10*52;
+        public const int NumberOfCardsPerPlayer = 2;
+
+        //Cards
+        public const int CardOffsetX = 100;
+        public const int CardOffsetY = 0;
+        
+        public const int PlayerCardXPosition = 630;
+        public const int PlayerCardYPosition = 380;
+        
+        public const int Bot1CardXPosition = 275;
+        public const int Bot1CardYPosition = 380;
+        
+        public const int Bot2CardXPosition = 275;
+        public const int Bot2CardYPosition = 155;
+        
+        public const int Bot3CardXPosition = 630;
+        public const int Bot3CardYPosition = 155;
+        
+        public const int Bot4CardXPosition = 970;
+        public const int Bot4CardYPosition = 155;
+        
+        public const int Bot5CardXPosition = 970;
+        public const int Bot5CardYPosition = 380;
     }
 }

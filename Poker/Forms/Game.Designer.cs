@@ -44,9 +44,9 @@
             this.potTextbox = new System.Windows.Forms.TextBox();
             this.optionsButton = new System.Windows.Forms.Button();
             this.bigBlindButton = new System.Windows.Forms.Button();
-            this.tbSB = new System.Windows.Forms.TextBox();
+            this.smallBlindTextBox = new System.Windows.Forms.TextBox();
             this.smallBlindButton = new System.Windows.Forms.Button();
-            this.tbBB = new System.Windows.Forms.TextBox();
+            this.bigBlindTextBox = new System.Windows.Forms.TextBox();
             this.bot5Status = new System.Windows.Forms.Label();
             this.bot4Status = new System.Windows.Forms.Label();
             this.bot3Status = new System.Windows.Forms.Label();
@@ -67,7 +67,6 @@
             this.foldButton.TabIndex = 0;
             this.foldButton.Text = "Fold";
             this.foldButton.UseVisualStyleBackColor = true;
-            this.foldButton.Click += new System.EventHandler(this.bFold_Click);
             // 
             // checkButton
             // 
@@ -79,7 +78,6 @@
             this.checkButton.TabIndex = 2;
             this.checkButton.Text = "Check";
             this.checkButton.UseVisualStyleBackColor = true;
-            this.checkButton.Click += new System.EventHandler(this.bCheck_Click);
             // 
             // callButton
             // 
@@ -91,7 +89,6 @@
             this.callButton.TabIndex = 3;
             this.callButton.Text = "Call";
             this.callButton.UseVisualStyleBackColor = true;
-            this.callButton.Click += new System.EventHandler(this.bCall_Click);
             // 
             // raiseButton
             // 
@@ -103,7 +100,6 @@
             this.raiseButton.TabIndex = 4;
             this.raiseButton.Text = "Raise";
             this.raiseButton.UseVisualStyleBackColor = true;
-            this.raiseButton.Click += new System.EventHandler(this.bRaise_Click);
             // 
             // timerTextbox
             // 
@@ -120,7 +116,7 @@
             // 
             this.playerTextboxChips.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.playerTextboxChips.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.playerTextboxChips.Location = new System.Drawing.Point(755, 553);
+            this.playerTextboxChips.Location = new System.Drawing.Point(630, 553);
             this.playerTextboxChips.Name = "playerTextboxChips";
             this.playerTextboxChips.Size = new System.Drawing.Size(163, 23);
             this.playerTextboxChips.TabIndex = 6;
@@ -135,7 +131,6 @@
             this.addChipsButton.TabIndex = 7;
             this.addChipsButton.Text = "AddChips";
             this.addChipsButton.UseVisualStyleBackColor = true;
-            this.addChipsButton.Click += new System.EventHandler(this.bAdd_Click);
             // 
             // addChipsTextBox
             // 
@@ -149,7 +144,7 @@
             // 
             this.bot5TextboxChips.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.bot5TextboxChips.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.bot5TextboxChips.Location = new System.Drawing.Point(1012, 553);
+            this.bot5TextboxChips.Location = new System.Drawing.Point(970, 553);
             this.bot5TextboxChips.Name = "bot5TextboxChips";
             this.bot5TextboxChips.Size = new System.Drawing.Size(152, 23);
             this.bot5TextboxChips.TabIndex = 9;
@@ -169,7 +164,7 @@
             // 
             this.bot3TextboxChips.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bot3TextboxChips.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.bot3TextboxChips.Location = new System.Drawing.Point(755, 81);
+            this.bot3TextboxChips.Location = new System.Drawing.Point(630, 81);
             this.bot3TextboxChips.Name = "bot3TextboxChips";
             this.bot3TextboxChips.Size = new System.Drawing.Size(125, 23);
             this.bot3TextboxChips.TabIndex = 11;
@@ -188,7 +183,7 @@
             // 
             this.bot1TextboxChips.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.bot1TextboxChips.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.bot1TextboxChips.Location = new System.Drawing.Point(181, 553);
+            this.bot1TextboxChips.Location = new System.Drawing.Point(279, 553);
             this.bot1TextboxChips.Name = "bot1TextboxChips";
             this.bot1TextboxChips.Size = new System.Drawing.Size(142, 23);
             this.bot1TextboxChips.TabIndex = 13;
@@ -198,7 +193,7 @@
             // 
             this.potTextbox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.potTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.potTextbox.Location = new System.Drawing.Point(606, 212);
+            this.potTextbox.Location = new System.Drawing.Point(507, 51);
             this.potTextbox.Name = "potTextbox";
             this.potTextbox.Size = new System.Drawing.Size(125, 23);
             this.potTextbox.TabIndex = 14;
@@ -213,7 +208,6 @@
             this.optionsButton.TabIndex = 15;
             this.optionsButton.Text = "BB/SB";
             this.optionsButton.UseVisualStyleBackColor = true;
-            this.optionsButton.Click += new System.EventHandler(this.bOptions_Click);
             // 
             // bigBlindButton
             // 
@@ -223,15 +217,14 @@
             this.bigBlindButton.TabIndex = 16;
             this.bigBlindButton.Text = "Big Blind";
             this.bigBlindButton.UseVisualStyleBackColor = true;
-            this.bigBlindButton.Click += new System.EventHandler(this.bBB_Click);
             // 
-            // tbSB
+            // smallBlindTextBox
             // 
-            this.tbSB.Location = new System.Drawing.Point(12, 228);
-            this.tbSB.Name = "tbSB";
-            this.tbSB.Size = new System.Drawing.Size(75, 20);
-            this.tbSB.TabIndex = 17;
-            this.tbSB.Text = "250";
+            this.smallBlindTextBox.Location = new System.Drawing.Point(12, 228);
+            this.smallBlindTextBox.Name = "smallBlindTextBox";
+            this.smallBlindTextBox.Size = new System.Drawing.Size(75, 20);
+            this.smallBlindTextBox.TabIndex = 17;
+            this.smallBlindTextBox.Text = "250";
             // 
             // smallBlindButton
             // 
@@ -241,20 +234,19 @@
             this.smallBlindButton.TabIndex = 18;
             this.smallBlindButton.Text = "Small Blind";
             this.smallBlindButton.UseVisualStyleBackColor = true;
-            this.smallBlindButton.Click += new System.EventHandler(this.bSB_Click);
             // 
-            // tbBB
+            // bigBlindTextBox
             // 
-            this.tbBB.Location = new System.Drawing.Point(12, 283);
-            this.tbBB.Name = "tbBB";
-            this.tbBB.Size = new System.Drawing.Size(75, 20);
-            this.tbBB.TabIndex = 19;
-            this.tbBB.Text = "500";
+            this.bigBlindTextBox.Location = new System.Drawing.Point(12, 283);
+            this.bigBlindTextBox.Name = "bigBlindTextBox";
+            this.bigBlindTextBox.Size = new System.Drawing.Size(75, 20);
+            this.bigBlindTextBox.TabIndex = 19;
+            this.bigBlindTextBox.Text = "500";
             // 
             // bot5Status
             // 
             this.bot5Status.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bot5Status.Location = new System.Drawing.Point(1012, 579);
+            this.bot5Status.Location = new System.Drawing.Point(970, 579);
             this.bot5Status.Name = "bot5Status";
             this.bot5Status.Size = new System.Drawing.Size(152, 32);
             this.bot5Status.TabIndex = 26;
@@ -270,7 +262,7 @@
             // bot3Status
             // 
             this.bot3Status.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bot3Status.Location = new System.Drawing.Point(755, 107);
+            this.bot3Status.Location = new System.Drawing.Point(630, 107);
             this.bot3Status.Name = "bot3Status";
             this.bot3Status.Size = new System.Drawing.Size(125, 32);
             this.bot3Status.TabIndex = 28;
@@ -278,7 +270,7 @@
             // bot1Status
             // 
             this.bot1Status.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.bot1Status.Location = new System.Drawing.Point(181, 579);
+            this.bot1Status.Location = new System.Drawing.Point(279, 579);
             this.bot1Status.Name = "bot1Status";
             this.bot1Status.Size = new System.Drawing.Size(142, 32);
             this.bot1Status.TabIndex = 29;
@@ -286,7 +278,7 @@
             // playerStatus
             // 
             this.playerStatus.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.playerStatus.Location = new System.Drawing.Point(755, 579);
+            this.playerStatus.Location = new System.Drawing.Point(630, 579);
             this.playerStatus.Name = "playerStatus";
             this.playerStatus.Size = new System.Drawing.Size(163, 32);
             this.playerStatus.TabIndex = 30;
@@ -302,7 +294,7 @@
             // 
             this.potLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.potLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.potLabel.Location = new System.Drawing.Point(654, 188);
+            this.potLabel.Location = new System.Drawing.Point(555, 27);
             this.potLabel.Name = "potLabel";
             this.potLabel.Size = new System.Drawing.Size(31, 21);
             this.potLabel.TabIndex = 0;
@@ -331,9 +323,9 @@
             this.Controls.Add(this.bot3Status);
             this.Controls.Add(this.bot4Status);
             this.Controls.Add(this.bot5Status);
-            this.Controls.Add(this.tbBB);
+            this.Controls.Add(this.bigBlindTextBox);
             this.Controls.Add(this.smallBlindButton);
-            this.Controls.Add(this.tbSB);
+            this.Controls.Add(this.smallBlindTextBox);
             this.Controls.Add(this.bigBlindButton);
             this.Controls.Add(this.optionsButton);
             this.Controls.Add(this.potTextbox);
@@ -353,7 +345,6 @@
             this.DoubleBuffered = true;
             this.Name = "Game";
             this.Text = "GLS Texas Poker";
-            this.Layout += new System.Windows.Forms.LayoutEventHandler(this.Layout_Change);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -377,9 +368,9 @@
         private System.Windows.Forms.TextBox potTextbox;
         private System.Windows.Forms.Button optionsButton;
         private System.Windows.Forms.Button bigBlindButton;
-        private System.Windows.Forms.TextBox tbSB;
+        private System.Windows.Forms.TextBox smallBlindTextBox;
         private System.Windows.Forms.Button smallBlindButton;
-        private System.Windows.Forms.TextBox tbBB;
+        private System.Windows.Forms.TextBox bigBlindTextBox;
         private System.Windows.Forms.Label bot5Status;
         private System.Windows.Forms.Label bot4Status;
         private System.Windows.Forms.Label bot3Status;

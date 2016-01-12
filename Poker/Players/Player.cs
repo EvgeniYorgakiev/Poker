@@ -1,95 +1,68 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-using Poker.Constants;
-
-namespace Poker.Players
+﻿namespace Poker.Players
 {
+    using System.Collections.Generic;
+    using Cards;
+    using System.Drawing;
+
+    /// <summary>
+    /// The player class. Can be inherited
+    /// </summary>
     public abstract class Player
     {
-        private TextBox textBox;
-        private Panel panel;
-        private int chips;
-        private AnchorStyles anchorStyles;
+        private List<Card> cards;
+        private Point cardStartingPoint;
+        private Point cardOffsetFromEachother;
 
-        protected Player(TextBox textBox, AnchorStyles anchorStyles)
+        protected Player(Point cardStartingPoint, Point cardOffsetFromEachother)
         {
-            this.Panel = new Panel();
-            this.Chips = Constant.StartingChips;
-            this.TextBox = textBox;
-            this.TextBox.Enabled = true;
-            this.TextBox.Text = Constant.Chips + Chips;
-            this.AnchorStyles = (AnchorStyles.Bottom | AnchorStyles.Left);
+            this.CardStartingPoint = cardStartingPoint;
+            this.CardOffsetFromEachother = cardOffsetFromEachother;
+            this.Cards = new List<Card>();
         }
 
-        public Panel Panel
+        /// <summary>
+        /// The player's cards. Should be 2 on Texas Hold 'em
+        /// </summary>
+        public List<Card> Cards
         {
             get
             {
-                return panel;
+                return this.cards;
             }
             set
             {
-                this.panel = value;
+                this.cards = value;
             }
         }
 
-        public int Chips
+        /// <summary>
+        /// The first player card's position
+        /// </summary>
+        public Point CardStartingPoint
         {
             get
             {
-                return chips;
+                return this.cardStartingPoint;
             }
             set
             {
-                chips = value;
+                this.cardStartingPoint = value;
             }
         }
 
-        public TextBox TextBox
+        /// <summary>
+        /// The Distance between each card in the player's hand
+        /// </summary>
+        public Point CardOffsetFromEachother
         {
             get
             {
-                return textBox;
+                return this.cardOffsetFromEachother;
             }
             set
             {
-                textBox = value;
+                this.cardOffsetFromEachother = value;
             }
-        }
-
-        public AnchorStyles AnchorStyles
-        {
-            get
-            {
-                return anchorStyles;
-            }
-            set
-            {
-                anchorStyles = value;
-            }
-        }
-
-        public virtual void ThrowCards(PictureBox[] cardHolder, int[] reserve, int i, ref int horizontal, ref int vertical,
-                               Image cardImage, Control.ControlCollection controls)
-        {
-            cardHolder[i].Tag = reserve[i];
-            cardHolder[i].Image = cardImage;
-            cardHolder[i].Anchor = this.AnchorStyles;
-            cardHolder[i].Location = new Point(horizontal, vertical);
-            horizontal += cardHolder[i].Width;
-            controls.Add(this.Panel);
-            int indexForOffset = i;
-            if (i%2 == 1)
-            {
-                indexForOffset--;
-            }
-            this.Panel.Location = new Point(
-                cardHolder[indexForOffset].Left - Constant.CardOffsetX, 
-                cardHolder[indexForOffset].Top - Constant.CardOffsetY);
-            this.Panel.BackColor = Color.DarkBlue;
-            this.Panel.Height = Constant.PanelX;
-            this.Panel.Width = Constant.PanelY;
-            this.Panel.Visible = false;
         }
     }
 }

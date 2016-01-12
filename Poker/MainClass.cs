@@ -1,9 +1,9 @@
-﻿using System;
-using System.Windows.Forms;
-using Poker.Forms;
-
-namespace Poker
+﻿namespace Poker
 {
+    using System;
+    using System.Windows.Forms;
+    using Forms;
+
     static class MainClass
     {
         /// <summary>
@@ -14,7 +14,7 @@ namespace Poker
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Game());
+            Application.Run(Game.Instance);
         }
     }
 }

@@ -1,12 +1,15 @@
-﻿namespace Poker.Players.Humans
-{
-    using System.Windows.Forms;
+﻿using System.Drawing;
 
+namespace Poker.Players.Humans
+{
+    /// <summary>
+    /// Represents the human player in the poker game.
+    /// </summary>
     public class HumanPlayer : Player
     {
-        public HumanPlayer(TextBox textBox, AnchorStyles anchorStyles) : base(textBox, anchorStyles)
+        public HumanPlayer(Point cardStartingPoint, Point cardOffsetFromEachother)
+            : base(cardStartingPoint, cardOffsetFromEachother)
         {
-
         }
     }
 }
