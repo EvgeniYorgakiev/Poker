@@ -1,7 +1,15 @@
 ﻿namespace Poker
 {
-    partial class AddChips
+    /// <summary>
+    /// The partial class for the design of the add chips form
+    /// </summary>
+    public partial class AddChips
     {
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox textBox1;
+
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -13,10 +21,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -53,7 +62,7 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "Add Chips";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.AddChipsButton);
             // 
             // button2
             // 
@@ -64,7 +73,7 @@
             this.button2.TabIndex = 2;
             this.button2.Text = "Exit";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.CloseButton);
             // 
             // textBox1
             // 
@@ -90,10 +99,5 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox1;
     }
 }

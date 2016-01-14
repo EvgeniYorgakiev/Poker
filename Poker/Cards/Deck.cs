@@ -1,36 +1,61 @@
-﻿using System.Threading.Tasks;
-
-namespace Poker.Cards
+﻿namespace Poker.Cards
 {
     using System;
-    using System.Drawing;
-    using System.Text.RegularExpressions;
-    using System.IO;
-    using Constants;
     using System.Collections.Generic;
-    using Players.Bots;
-    using Players.Humans;
-    using Players;
+    using System.Drawing;
+    using System.IO;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using Forms;
+    using Players;
+    using Players.Bots;
+    using Players.Humans;
 
     /// <summary>
     /// Represents a 52 card deck of the standard poker game
     /// </summary>
     public class Deck
     {
-        private Card[] cards = new Card[Constant.DeckSize];
+        private const string CardPath = "..\\..\\Resources\\Cards";
+        private const string CardExtension = ".png";
 
+        private const int DeckSize = 52;
+        private const int NeutralCardsNumber = 5;
+        private const int ShuffleTimes = 10 * 52;
+        private const int NumberOfCardsPerPlayer = 2;
+        private const int NumberOfPlayers = 6;
+
+        private const int StartingXPositionForCenterCards = 475;
+        private const int StartingYPositionForCenterCards = 270;
+        private const int CardDistanceX = 100;
+        private const int CardDistanceY = 0;
+        private const int DefaultCardHeight = 110;
+        private const int DefaultCardWidth = (int)(DefaultCardHeight / 1.625);
+
+        private Card[] cards = new Card[DeckSize];
+        private Card[] neutralCards = new Card[NeutralCardsNumber];
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Deck"/> class
+        /// </summary>
         public Deck()
         {
-            var imageLocations = Directory.GetFiles(Constant.CardPath, "*" + Constant.CardExtension,
+            var imageLocations = Directory.GetFiles(
+                CardPath,
+                "*" + CardExtension,
                 SearchOption.TopDirectoryOnly);
-            for (int i = 0; i < Cards.Length; i++)
+            for (int i = 0; i < this.Cards.Length; i++)
             {
                 int cardPower = this.GetCardPowerFromFileName(imageLocations[i]);
                 Suit cardSuit = this.GetCardSuitFromFileName(imageLocations[i]);
-                this.Cards[i] = new Card(Image.FromFile(imageLocations[i]), cardPower, cardSuit);
-                this.Cards[i].PictureBox.Name = "pictureBox " + cardPower + " of " + cardSuit;
+                this.Cards[i] = new Card(Image.FromFile(imageLocations[i]), cardPower, cardSuit)
+                {
+                    PictureBox =
+                    {
+                        Name = "pictureBox " + cardPower + " of " + cardSuit
+                    }
+                };
             }
         }
 
@@ -43,9 +68,75 @@ namespace Poker.Cards
             {
                 return this.cards;
             }
+
             set
             {
                 this.cards = value;
+            }
+        }
+
+        /// <summary>
+        /// Represents an array of the 5 cards that are in the center of the table
+        /// </summary>
+        public Card[] NeutalCards
+        {
+            get
+            {
+                return this.neutralCards;
+            }
+
+            set
+            {
+                this.neutralCards = value;
+            }
+        }
+
+        /// <summary>
+        /// Throw everybody's cards for a new game
+        /// </summary>
+        /// <param name="player">The human player in the game</param>
+        /// <param name="bots">All of the bots that the player will be facing</param>
+        public async void ThrowCards(HumanPlayer player, List<Bot> bots)
+        {
+            Game.Instance.FixCall();
+            Game.Instance.callButton.Enabled = false;
+            Game.Instance.foldButton.Enabled = false;
+            Game.Instance.checkButton.Enabled = false;
+            Game.Instance.raiseButton.Enabled = false;
+
+            this.RemoveAllCardsOnBoard(player, bots);
+
+            this.ShuffleCards();
+
+            this.ThrowPlayerCard(player, 0);
+
+            for (int i = 0; i < bots.Count; i++)
+            {
+                if (bots[i].Chips > 0)
+                {
+                    await Task.Delay(300);
+                    this.ThrowPlayerCard(bots[i], (i + 1) * NumberOfCardsPerPlayer);
+                }
+            }
+
+            this.ThrowCenterCards();
+
+            Game.Instance.callButton.Enabled = true;
+            Game.Instance.foldButton.Enabled = true;
+            Game.Instance.raiseButton.Enabled = true;
+        }
+
+        /// <summary>
+        /// Shuffles the deck for random cards.
+        /// </summary>
+        public void ShuffleCards()
+        {
+            Random random = new Random();
+            for (int i = 0; i < ShuffleTimes; i++)
+            {
+                int randomCardIndex1 = random.Next(0, this.Cards.Length);
+                int randomCardIndex2 = random.Next(0, this.Cards.Length);
+                this.SwapCards(randomCardIndex1, randomCardIndex2);
             }
         }
 
@@ -92,20 +183,6 @@ namespace Poker.Cards
         }
 
         /// <summary>
-        /// Shuffles the deck for random cards.
-        /// </summary>
-        private void ShuffleCards()
-        {
-            Random random = new Random();
-            for (int i = 0; i < Constant.ShuffleTimes; i++)
-            {
-                int randomCardIndex1 = random.Next(0, this.Cards.Length);
-                int randomCardIndex2 = random.Next(0, this.Cards.Length);
-                SwapCards(randomCardIndex1, randomCardIndex2);
-            }
-        }
-
-        /// <summary>
         /// Swaps 2 cards using their indexes in the deck
         /// </summary>
         /// <param name="card1Index">The index of the first card we want to swap in the deck</param>
@@ -124,12 +201,64 @@ namespace Poker.Cards
         /// <param name="startingCardIndexInDeck">The starting index of the cards in the deck we will give to the player.</param>
         private async void ThrowPlayerCard(Player player, int startingCardIndexInDeck)
         {
-            //We use a starting card index in the deck instead of random so that we don't end up giving the same card to 2 players
-            for (int i = 0; i < Constant.NumberOfCardsPerPlayer; i++)
+            this.RemovePlayerCards(player);
+            ////We use a starting card index in the deck instead of random so that we don't end up giving the same card to 2 players
+            for (int i = 0; i < NumberOfCardsPerPlayer; i++)
             {
                 await Task.Delay(200);
-                GivePlayerCard(player, startingCardIndexInDeck);
+                this.GivePlayerCard(player, startingCardIndexInDeck);
             }
+        }
+
+        /// <summary>
+        /// Throw the center cards.
+        /// </summary>
+        private async void ThrowCenterCards()
+        {
+            int cardIndex = NumberOfCardsPerPlayer * NumberOfPlayers;
+            Point locationOfFirstCard = new Point(StartingXPositionForCenterCards, StartingYPositionForCenterCards);
+            Point distanceBetweenCards = new Point(CardDistanceX, CardDistanceY);
+            for (int i = 0; i < this.NeutalCards.Length; i++)
+            {
+                await Task.Delay(200);
+                this.NeutalCards[i] = this.NewCard(cardIndex + i, i, locationOfFirstCard, distanceBetweenCards, false);
+            }
+        }
+
+        /// <summary>
+        /// Removes the player's currently held cards making room for another hand
+        /// </summary>
+        /// <param name="player">The player that will receive new cards</param>
+        /// <param name="bots">The bots the player will be facing</param>
+        private void RemoveAllCardsOnBoard(HumanPlayer player, List<Bot> bots)
+        {
+            for (int i = 0; i < this.NeutalCards.Length; i++)
+            {
+                if (this.NeutalCards[i] != null)
+                {
+                    Game.Instance.Controls.Remove(this.NeutalCards[i].PictureBox);
+                }
+            }
+
+            this.RemovePlayerCards(player);
+            for (int i = 0; i < bots.Count; i++)
+            {
+                this.RemovePlayerCards(bots[i]);
+            }
+        }
+
+        /// <summary>
+        /// Removes the player's currently held cards making room for another hand
+        /// </summary>
+        /// <param name="player">The player that will receive new cards</param>
+        private void RemovePlayerCards(Player player)
+        {
+            for (int i = 0; i < player.Cards.Count; i++)
+            {
+                Game.Instance.Controls.Remove(player.Cards[i].PictureBox);
+            }
+
+            player.Cards = new List<Card>();
         }
 
         /// <summary>
@@ -141,36 +270,55 @@ namespace Poker.Cards
         {
             int numberOfCardForPlayer = player.Cards.Count;
             int cardIndex = startingCardIndexInDeck + numberOfCardForPlayer;
-            var currentCard = this.Cards[cardIndex];
-            currentCard.PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            currentCard.PictureBox.Height = 130;
-            currentCard.PictureBox.Width = 80;
-            currentCard.IsVisible = true;
+            bool isFacingUp;
             if (player is Bot)
             {
-                currentCard.IsVisible = false;
-                currentCard.PictureBox.Image = Card.Back;
+                isFacingUp = false;
             }
-            currentCard.PictureBox.Location = new Point(
-                player.CardStartingPoint.X + numberOfCardForPlayer * player.CardOffsetFromEachother.X,
-                player.CardStartingPoint.Y + numberOfCardForPlayer * player.CardOffsetFromEachother.Y);
-            Game.Instance.Controls.Add(currentCard.PictureBox);
+            else
+            {
+                isFacingUp = true;
+            }
+
+            var currentCard = this.NewCard(
+                cardIndex, 
+                numberOfCardForPlayer,
+                player.CardStartingPoint,
+                player.CardDistanceFromEachother,
+                isFacingUp);
             player.Cards.Add(currentCard);
         }
 
         /// <summary>
-        /// Throw everybody's cards for a new game
+        /// Creates a new card on the board
         /// </summary>
-        public async void ThrowCards(HumanPlayer player, List<Bot> bots)
+        /// <param name="cardIndex">The index of the card in the array</param>
+        /// <param name="numberOfCard">The number of the card in the row it is</param>
+        /// <param name="location">The location of the first card in the row</param>
+        /// <param name="distance">The distance between the cards</param>
+        /// <param name="isFacingUp">If the card is facing up or down</param>
+        /// <returns>A new card with all of it's necessary fields set.</returns>
+        private Card NewCard(int cardIndex, int numberOfCard, Point location, Point distance, bool isFacingUp)
         {
-            this.ShuffleCards();
-            this.ThrowPlayerCard(player, 0);
-            for (int i = 0; i < bots.Count ; i++)
+            var currentCard = this.Cards[cardIndex];
+            currentCard.PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            currentCard.PictureBox.Height = DefaultCardHeight;
+            currentCard.PictureBox.Width = DefaultCardWidth;
+            currentCard.PictureBox.Location = new Point(
+                location.X + (numberOfCard * distance.X),
+                location.Y + (numberOfCard * distance.Y));
+            if (isFacingUp)
             {
-                await Task.Delay(300);
-                this.ThrowPlayerCard(bots[i], (i + 1) * Constant.NumberOfCardsPerPlayer);
+                currentCard.PictureBox.Image = currentCard.Front;
             }
+            else
+            {
+                currentCard.PictureBox.Image = Card.Back;
+            }
+
+            Game.Instance.Controls.Add(currentCard.PictureBox);
+
+            return currentCard;
         }
     }
 }
-

@@ -1,52 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace Poker
+﻿namespace Poker
 {
+    using System;
+    using System.Drawing;
+    using System.Windows.Forms;
+
+    /// <summary>
+    /// The form for the chips adding option
+    /// </summary>
     public partial class AddChips : Form
     {
-        public int a=0;
+        private int chipsAdded;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddChips"/> class chips form
+        /// </summary>
         public AddChips()
         {
             FontFamily fontFamily = new FontFamily("Arial");
-            InitializeComponent();
-            ControlBox = false;
-            label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.InitializeComponent();
+            this.ControlBox = false;
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         }
 
-        public void button1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Adds chips to all players
+        /// </summary>
+        /// <param name="sender">The sender of the event</param>
+        /// <param name="e">Event arguments</param>
+        public void AddChipsButton(object sender, EventArgs e)
         {
             int parsedValue;
-            if (int.Parse(textBox1.Text) > 100000000)
+            if (int.Parse(this.textBox1.Text) > 100000000)
             {
                 MessageBox.Show("The maximium chips you can add is 100000000");
                 return;
             }
-            if (!int.TryParse(textBox1.Text, out parsedValue))
+
+            if (!int.TryParse(this.textBox1.Text, out parsedValue))
             {
                 MessageBox.Show("This is a number only field");
                 return;
-
             }
-            else if (int.TryParse(textBox1.Text, out parsedValue) && int.Parse(textBox1.Text) <= 100000000)
+            else if (int.TryParse(this.textBox1.Text, out parsedValue) && int.Parse(this.textBox1.Text) <= 100000000)
             {
-                a = int.Parse(textBox1.Text);
+                this.chipsAdded = int.Parse(this.textBox1.Text);
                 this.Close();
             }
         }
-        private void button2_Click(object sender, EventArgs e)
+
+        /// <summary>
+        /// Closes the add chips form
+        /// </summary>
+        /// <param name="sender">The sender of the event</param>
+        /// <param name="e">Event arguments</param>
+        private void CloseButton(object sender, EventArgs e)
         {
             var message = "Are you sure?";
             var title = "Quit";
             var result = MessageBox.Show(
-            message,title,
+            message,
+            title,
             MessageBoxButtons.YesNo, 
             MessageBoxIcon.Question);
             switch (result)

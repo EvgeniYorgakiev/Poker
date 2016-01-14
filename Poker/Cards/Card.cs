@@ -1,27 +1,67 @@
 ﻿namespace Poker.Cards
 {
     using System;
-    using System.Windows.Forms;
     using System.Drawing;
-    using Constants;
+    using System.Windows.Forms;
 
     /// <summary>
     /// Represents a playing card
     /// </summary>
     public class Card
     {
+        private const string CardBack = "..\\..\\Resources\\Back\\Back.png";
+
+        private static Image back;
+        private Image front;
         private PictureBox pictureBox;
         private int power;
         private Suit suit;
-        private bool isVisible;
-        private static Image back;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Card"/> class
+        /// </summary>
+        /// <param name="image">A windows forms image of the card</param>
+        /// <param name="power">The power of the card being from 1-14 with 1 and 14 being Ace</param>
+        /// <param name="suit">The suit of the card</param>
         public Card(Image image, int power, Suit suit)
         {
             this.PictureBox = new PictureBox();
-            this.PictureBox.Image = image;
+            this.Front = image;
+            this.PictureBox.Image = this.Front;
             this.Power = power;
             this.Suit = suit;
+        }
+
+        /// <summary>
+        /// The back of the card
+        /// </summary>
+        public static Image Back
+        {
+            get
+            {
+                if (back == null)
+                {
+                    back = GetBackOfCard();
+                }
+
+                return back;
+            }
+        }
+
+        /// <summary>
+        /// The front of the card
+        /// </summary>
+        public Image Front
+        {
+            get
+            {
+                return this.front;
+            }
+
+            private set
+            {
+                this.front = value;
+            }
         }
 
         /// <summary>
@@ -33,6 +73,7 @@
             {
                 return this.pictureBox;
             }
+
             set
             {
                 this.pictureBox = value;
@@ -48,6 +89,7 @@
             {
                 return this.power;
             }
+
             set
             {
                 if (value == 1)
@@ -75,6 +117,7 @@
             {
                 return this.suit;
             }
+
             set
             {
                 this.suit = value;
@@ -82,35 +125,12 @@
         }
 
         /// <summary>
-        /// If the card's face can be seen
+        /// Retrieves the back of the card
         /// </summary>
-        public bool IsVisible
-        {
-            get
-            {
-                return this.isVisible;
-            }
-            set
-            {
-                this.isVisible = value;
-            }
-        }
-
-        public static Image Back
-        {
-            get
-            {
-                if (back == null)
-                {
-                    back = GetBackOfCard();
-                }
-                return back;
-            }
-        }
-
+        /// <returns>Returns the image of how the back of the card looks like</returns>
         private static Image GetBackOfCard()
         {
-            var image = Image.FromFile(Constant.CardBack);
+            var image = Image.FromFile(CardBack);
 
             return image;
         }

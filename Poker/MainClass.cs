@@ -4,13 +4,16 @@
     using System.Windows.Forms;
     using Forms;
 
-    static class MainClass
+    /// <summary>
+    /// The class that is run first when the program starts
+    /// </summary>
+    public static class MainClass
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

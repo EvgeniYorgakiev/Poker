@@ -48,7 +48,7 @@
     <Compile Include="Cards\Deck.cs" />
     <Compile Include="Cards\Suit.cs" />
     <Compile Include="Players\Bots\Bot.cs" />
-    <Compile Include="Constants\Constant.cs" />
+    <Compile Include="Constants\GlobalConstants.cs" />
     <Compile Include="Forms\AddChips.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,11 +60,11 @@
     </Compile>
     <Compile Include="Forms\Game.Designer.cs">
       <DependentUpon>Game.cs</DependentUpon>
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="MainClass.cs" />
     <Compile Include="Players\Humans\HumanPlayer.cs" />
     <Compile Include="Players\Player.cs" />
-    <Compile Include="ProgressBars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\AddChips.resx">
       <DependentUpon>AddChips.cs</DependentUpon>
