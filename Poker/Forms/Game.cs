@@ -6,6 +6,7 @@
     using System.Windows.Forms;
     using Cards;
     using Constants;
+    using Players;
     using Players.Bots;
     using Players.Humans;
 
@@ -44,9 +45,16 @@
         private const int DefaultSmallBlindCall = 250;
         private const int LowestSmallBlind = 250;
         private const int MaximumSmallBlind = 100000;
+        private const string BlindNeedsRoundNumber = "The blind can be only a round number !";
+        private const string NumberOnlyField = "This is a number only field";
+        private const string MaximumValueOfBlindText = "The maximum value of the current blind is ";
+        private const string MinimumValueOfBlindText = "The minimum value of the current blind is ";
+        private const string ChangesSavedText =
+            "The changes have been saved ! They will become available the next hand you play. ";
 
         //// Calls
-        private const string CallText = "Call "; 
+        private const string CallText = "Call ";
+        private const string PotDefaultMoney = "0";
 
         private static readonly object Padlock = new object();
         private static Game instance;
@@ -61,7 +69,15 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class
         /// </summary>
-        public Game()
+        public Game() : this(GlobalConstants.CardPath)
+        {
+            
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Game"/> class with a path specified used for testing
+        /// </summary>
+        public Game(string path)
         {
             instance = this;
             this.InitializeComponent();
@@ -71,7 +87,7 @@
                 GlobalConstants.StartingNumberOfChips,
                 this.playerStatus,
                 this.playerTextboxChips);
-            this.Bots = new List<Bot>()
+            this.Bots = new List<Bot>
             {
                 new Bot(
                     new Point(Bot1CardXPosition, Bot1CardYPosition),
@@ -108,7 +124,7 @@
             this.CurrentBigBlind = DefaultBigBlindCall;
             this.CurrentSmallBlind = DefaultSmallBlindCall;
             this.WindowState = FormWindowState.Maximized;
-            this.Deck = new Deck();
+            this.Deck = new Deck(path);
             this.Deck.ThrowCards(this.Player, this.Bots);
         }
 
@@ -248,18 +264,68 @@
         /// </summary>
         public void FixCall()
         {
-            if (this.IsUsingBigBlind)
+            if (this.Call == 0)
             {
-                this.Call = this.CurrentBigBlind;
+                if (this.IsUsingBigBlind)
+                {
+                    this.Call = this.CurrentBigBlind;
+                }
+                else
+                {
+                    this.Call = this.CurrentSmallBlind;
+                }
+            }
+
+            if (this.Call != this.Player.CurrentCall)
+            {
+                this.callButton.Text = CallText + (this.Call - this.Player.CurrentCall);
             }
             else
             {
-                this.Call = this.CurrentSmallBlind;
+                this.callButton.Text = CallText;
             }
-
-            this.callButton.Text = CallText + this.Call;
         }
-        
+
+        /// <summary>
+        /// Enables or disables the buttons depending on the parameters
+        /// </summary>
+        /// <param name="foldEnabled">Enables or disables the fold button</param>
+        /// <param name="checkEnabled">Enables or disables the check button</param>
+        /// <param name="callEnabled">Enables or disables the call button</param>
+        /// <param name="raiseEnabled">Enables or disables the raise button</param>
+        public void EnableButtons(bool foldEnabled, bool checkEnabled, bool callEnabled, bool raiseEnabled)
+        {
+            this.callButton.Enabled = callEnabled;
+            this.foldButton.Enabled = foldEnabled;
+            this.checkButton.Enabled = checkEnabled;
+            this.raiseButton.Enabled = raiseEnabled;
+        }
+
+        /// <summary>
+        /// The player raises the bet updating the textboxes and the chips
+        /// </summary>
+        /// <param name="currentPlayer">The player that raises the bet</param>
+        /// <param name="raiseValue">The value the player wishes to raises with.</param>
+        public void RaiseBet(Player currentPlayer, int raiseValue)
+        {
+            this.potTextbox.Text = (int.Parse(this.potTextbox.Text) + raiseValue).ToString();
+            currentPlayer.Chips -= raiseValue;
+            this.Call += raiseValue;
+            currentPlayer.CurrentCall = this.Call;
+        }
+
+        /// <summary>
+        /// The player calls on the blind without raising updating the textboxes and the chips
+        /// </summary>
+        /// <param name="currentPlayer">The player that calls</param>
+        public void CallForPlayer(Player currentPlayer)
+        {
+            int differenceInCall = this.Call - currentPlayer.CurrentCall;
+            this.potTextbox.Text = (int.Parse(this.potTextbox.Text) + differenceInCall).ToString();
+            currentPlayer.Chips -= differenceInCall;
+            currentPlayer.CurrentCall = this.Call;
+        }
+
         /// <summary>
         /// The event triggers when the blind options button is clicked
         /// </summary>
@@ -337,27 +403,71 @@
             int parsedValue;
             if (textBox.Text.Contains(",") || textBox.Text.Contains("."))
             {
-                MessageBox.Show("The blind can be only a round number !");
-                return;
+                MessageBox.Show(BlindNeedsRoundNumber);
             }
             else if (!int.TryParse(textBox.Text, out parsedValue))
             {
-                MessageBox.Show("This is a number only field");
-                return;
+                MessageBox.Show(NumberOnlyField);
             }
             else if (parsedValue > maximumValue)
             {
-                MessageBox.Show("The maximum value of the current blind is " + maximumValue);
+                MessageBox.Show(MaximumValueOfBlindText + maximumValue);
             }
             else if (parsedValue < lowestValue)
             {
-                MessageBox.Show("The minimum value of the current blind is " + lowestValue);
+                MessageBox.Show(MinimumValueOfBlindText + lowestValue);
             }
             else if (parsedValue >= lowestValue && parsedValue <= maximumValue)
             {
                 currentValue = parsedValue;
-                MessageBox.Show("The changes have been saved ! They will become available the next hand you play. ");
+                MessageBox.Show(ChangesSavedText);
             }
+        }
+
+        /// <summary>
+        /// The event triggers when the call button is clicked
+        /// </summary>
+        /// <param name="sender">The sender of the events</param>
+        /// <param name="e">The event arguments</param>
+        private void OnCall(object sender, EventArgs e)
+        {
+            this.EnableButtons(false, false, false, false);
+            this.CallForPlayer(this.Player);
+            bool thereIsABotStillPlaying = false;
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                this.Bots[i].TakeTurn(i + 1);
+                if (!this.Bots[i].HasFolded)
+                {
+                    thereIsABotStillPlaying = true;
+                }
+            }
+
+            if (!thereIsABotStillPlaying)
+            {
+                this.HandWinner(this.Player);
+            }
+
+            if (this.Player.CurrentCall == this.Call)
+            {
+                this.EnableButtons(true, true, false, true);
+            }
+            else
+            {
+                this.EnableButtons(true, false, true, true);
+            }
+        }
+
+        /// <summary>
+        /// Adds the money from to pot to the player
+        /// </summary>
+        /// <param name="winner">The winner in the current hand</param>
+        private void HandWinner(Player winner)
+        {
+            winner.Chips += int.Parse(this.potTextbox.Text);
+            this.potTextbox.Text = PotDefaultMoney;
+            this.Call = 0;
+            this.FixCall();
         }
 
         /// <summary>
@@ -368,6 +478,47 @@
         private void OnRaise(object sender, EventArgs e)
         {
             this.Deck.ThrowCards(this.Player, this.Bots);
+        }
+
+        /// <summary>
+        /// The event triggers when the fold button is clicked
+        /// </summary>
+        /// <param name="sender">The sender of the events</param>
+        /// <param name="e">The event arguments</param>
+        private void OnFold(object sender, EventArgs e)
+        {
+            this.Player.Fold();
+            while (true)
+            {
+                int numberOfFoldedBots = 0;
+                for (int i = 0; i < this.Bots.Count; i++)
+                {
+                    if (numberOfFoldedBots == this.Bots.Count - 1)
+                    {
+                        this.HandWinner(this.Bots[i]);
+                        return;
+                    }
+
+                    this.Bots[i].TakeTurn(i + 1);
+                    if (this.Bots[i].HasFolded)
+                    {
+                        numberOfFoldedBots++;
+                    }
+                }
+
+                if (numberOfFoldedBots == this.Bots.Count - 1)
+                {
+                    break;
+                }
+            }
+
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                if (!this.Bots[i].HasFolded)
+                {
+                    this.HandWinner(this.Bots[i]);
+                }
+            }
         }
     }
 }

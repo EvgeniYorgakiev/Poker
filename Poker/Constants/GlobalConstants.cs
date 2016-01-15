@@ -5,6 +5,7 @@
     /// </summary>
     public static class GlobalConstants
     {
+        public const string CardPath = "..\\..\\Resources\\Cards";
         public const int StartingNumberOfChips = 10000;
     }
 }

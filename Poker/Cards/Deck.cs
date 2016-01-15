@@ -1,4 +1,6 @@
-﻿namespace Poker.Cards
+﻿using Poker.Constants;
+
+namespace Poker.Cards
 {
     using System;
     using System.Collections.Generic;
@@ -17,7 +19,6 @@
     /// </summary>
     public class Deck
     {
-        private const string CardPath = "..\\..\\Resources\\Cards";
         private const string CardExtension = ".png";
 
         private const int DeckSize = 52;
@@ -39,10 +40,18 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Deck"/> class
         /// </summary>
-        public Deck()
+        public Deck() : this(GlobalConstants.CardPath)
+        {
+            
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Deck"/> class. Used for unit testing
+        /// </summary>
+        public Deck(string path)
         {
             var imageLocations = Directory.GetFiles(
-                CardPath,
+                path,
                 "*" + CardExtension,
                 SearchOption.TopDirectoryOnly);
             for (int i = 0; i < this.Cards.Length; i++)
@@ -96,34 +105,34 @@
         /// </summary>
         /// <param name="player">The human player in the game</param>
         /// <param name="bots">All of the bots that the player will be facing</param>
-        public async void ThrowCards(HumanPlayer player, List<Bot> bots)
+        /// <param name="wait">If the method should wait for visual effects</param>
+        public async void ThrowCards(HumanPlayer player, List<Bot> bots, bool wait = true)
         {
             Game.Instance.FixCall();
-            Game.Instance.callButton.Enabled = false;
-            Game.Instance.foldButton.Enabled = false;
-            Game.Instance.checkButton.Enabled = false;
-            Game.Instance.raiseButton.Enabled = false;
 
-            this.RemoveAllCardsOnBoard(player, bots);
+            Game.Instance.EnableButtons(false, false, false, false);
 
             this.ShuffleCards();
 
-            this.ThrowPlayerCard(player, 0);
+            this.RemoveAllCardsOnBoard(player, bots);
+
+            this.ThrowPlayerCard(player, 0, wait);
 
             for (int i = 0; i < bots.Count; i++)
             {
                 if (bots[i].Chips > 0)
                 {
-                    await Task.Delay(300);
-                    this.ThrowPlayerCard(bots[i], (i + 1) * NumberOfCardsPerPlayer);
+                    if (wait)
+                    {
+                        await Task.Delay(300);
+                    }
+                    this.ThrowPlayerCard(bots[i], (i + 1) * NumberOfCardsPerPlayer, wait);
                 }
             }
 
-            this.ThrowCenterCards();
+            await this.ThrowCenterCards(wait);
 
-            Game.Instance.callButton.Enabled = true;
-            Game.Instance.foldButton.Enabled = true;
-            Game.Instance.raiseButton.Enabled = true;
+            Game.Instance.EnableButtons(true, false, true, true);
         }
 
         /// <summary>
@@ -199,13 +208,18 @@
         /// </summary>
         /// <param name="player">The player we wish to give cards to.</param>
         /// <param name="startingCardIndexInDeck">The starting index of the cards in the deck we will give to the player.</param>
-        private async void ThrowPlayerCard(Player player, int startingCardIndexInDeck)
+        /// <param name="wait">If the method should wait for visual effects</param>
+        private async void ThrowPlayerCard(Player player, int startingCardIndexInDeck, bool wait = true)
         {
             this.RemovePlayerCards(player);
+            player.HasFolded = false;
             ////We use a starting card index in the deck instead of random so that we don't end up giving the same card to 2 players
             for (int i = 0; i < NumberOfCardsPerPlayer; i++)
             {
-                await Task.Delay(200);
+                if (wait)
+                {
+                    await Task.Delay(200);
+                }
                 this.GivePlayerCard(player, startingCardIndexInDeck);
             }
         }
@@ -213,14 +227,18 @@
         /// <summary>
         /// Throw the center cards.
         /// </summary>
-        private async void ThrowCenterCards()
+        /// <param name="wait">If the method should wait for visual effects</param>
+        private async Task ThrowCenterCards(bool wait = true)
         {
             int cardIndex = NumberOfCardsPerPlayer * NumberOfPlayers;
             Point locationOfFirstCard = new Point(StartingXPositionForCenterCards, StartingYPositionForCenterCards);
             Point distanceBetweenCards = new Point(CardDistanceX, CardDistanceY);
             for (int i = 0; i < this.NeutalCards.Length; i++)
             {
-                await Task.Delay(200);
+                if (wait)
+                {
+                    await Task.Delay(200);
+                }
                 this.NeutalCards[i] = this.NewCard(cardIndex + i, i, locationOfFirstCard, distanceBetweenCards, false);
             }
         }
@@ -255,6 +273,7 @@
         {
             for (int i = 0; i < player.Cards.Count; i++)
             {
+                player.Cards[i].PictureBox.Visible = true;
                 Game.Instance.Controls.Remove(player.Cards[i].PictureBox);
             }
 

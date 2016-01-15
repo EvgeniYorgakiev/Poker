@@ -9,7 +9,7 @@
     /// </summary>
     public class Card
     {
-        private const string CardBack = "..\\..\\Resources\\Back\\Back.png";
+        public static string CardBack = "..\\..\\Resources\\Back\\Back.png";
 
         private static Image back;
         private Image front;

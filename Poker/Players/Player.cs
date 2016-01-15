@@ -16,6 +16,8 @@
         private Point cardStartingPoint;
         private Point cardDistanceFromEachother;
         private int chips;
+        private int currentCall;
+        private bool hasFolded;
         private Label status;
         private TextBox chipsTextBox;
 
@@ -35,6 +37,7 @@
             this.Status = status;
             this.ChipsTextBox = chipsTextBox;
             this.Chips = chips;
+            this.CurrentCall = 0;
         }
 
         /// <summary>
@@ -103,6 +106,38 @@
         }
 
         /// <summary>
+        /// The current call of the player
+        /// </summary>
+        public int CurrentCall
+        {
+            get
+            {
+                return this.currentCall;
+            }
+
+            set
+            {
+                this.currentCall = value;
+            }
+        }
+
+        /// <summary>
+        /// If the player has folded for the current hand
+        /// </summary>
+        public bool HasFolded
+        {
+            get
+            {
+                return this.hasFolded;
+            }
+
+            set
+            {
+                this.hasFolded = value;
+            }
+        }
+
+        /// <summary>
         /// The player's label
         /// </summary>
         public Label Status
@@ -121,7 +156,7 @@
         /// <summary>
         /// The player's chip's text box
         /// </summary>
-        public TextBox ChipsTextBox
+        private TextBox ChipsTextBox
         {
             get
             {
@@ -131,6 +166,18 @@
             set
             {
                 this.chipsTextBox = value;
+            }
+        }
+
+        /// <summary>
+        /// Hides the cards for the current hand and removes the player from the current hand
+        /// </summary>
+        public void Fold()
+        {
+            this.HasFolded = true;
+            for (int i = 0; i < this.Cards.Count; i++)
+            {
+                this.Cards[i].PictureBox.Visible = false;
             }
         }
     }

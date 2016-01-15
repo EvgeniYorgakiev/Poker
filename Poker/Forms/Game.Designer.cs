@@ -8,10 +8,10 @@
     /// </summary>
     public partial class Game
     {
-        public Button foldButton;
-        public Button checkButton;
-        public Button callButton;
-        public Button raiseButton;
+        private Button foldButton;
+        private Button checkButton;
+        private Button callButton;
+        private Button raiseButton;
         private ProgressBar timerTextbox;
         private TextBox playerTextboxChips;
         private Button addChipsButton;
@@ -102,6 +102,7 @@
             this.foldButton.TabIndex = 0;
             this.foldButton.Text = "Fold";
             this.foldButton.UseVisualStyleBackColor = true;
+            this.foldButton.Click += new System.EventHandler(this.OnFold);
             // 
             // checkButton
             // 
@@ -124,6 +125,7 @@
             this.callButton.TabIndex = 3;
             this.callButton.Text = "Call";
             this.callButton.UseVisualStyleBackColor = true;
+            this.callButton.Click += new System.EventHandler(this.OnCall);
             // 
             // raiseButton
             // 
