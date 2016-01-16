@@ -4,6 +4,8 @@
     using System.Drawing;
     using System.Windows.Forms;
     using Cards;
+    using Cards.Hands;
+    using Factories;
 
     /// <summary>
     /// The player class. Can be inherited
@@ -18,6 +20,7 @@
         private int chips;
         private int currentCall;
         private bool hasFolded;
+        private Hand power;
         private Label status;
         private TextBox chipsTextBox;
 
@@ -122,6 +125,22 @@
         }
 
         /// <summary>
+        /// The current power of the player's hand. For more information see <see cref="Hand"/>
+        /// </summary>
+        public Hand CurrentHand
+        {
+            get
+            {
+                return this.power;
+            }
+
+            set
+            {
+                this.power = value;
+            }
+        }
+
+        /// <summary>
         /// If the player has folded for the current hand
         /// </summary>
         public bool HasFolded
@@ -179,6 +198,29 @@
             {
                 this.Cards[i].PictureBox.Visible = false;
             }
+        }
+
+        /// <summary>
+        /// Determines the power of the player's hand taking in account the center cards too.
+        /// </summary>
+        /// <param name="neutralCards">The cards that are in the center of the board and shared for all players</param>
+        public void DetermineHandPower(Card[] neutralCards)
+        {
+            var knownCards = new List<Card>();
+            for (int i = 0; i < neutralCards.Length; i++)
+            {
+                if (neutralCards[i] != null && neutralCards[i].PictureBox.Image == neutralCards[i].Front)
+                {
+                    knownCards.Add(neutralCards[i]);
+                }
+            }
+
+            for (int i = 0; i < this.Cards.Count; i++)
+            {
+                knownCards.Add(this.Cards[i]);
+            }
+
+            this.CurrentHand = HandPowerFactory.StrongestHand(knownCards);
         }
     }
 }

@@ -7,10 +7,9 @@
     /// <summary>
     /// Represents a playing card
     /// </summary>
-    public class Card
+    public class Card : IComparable<Card>
     {
-        public static string CardBack = "..\\..\\Resources\\Back\\Back.png";
-
+        private static string cardBackPathPath = "..\\..\\Resources\\Back\\Back.png";
         private static Image back;
         private Image front;
         private PictureBox pictureBox;
@@ -30,6 +29,22 @@
             this.PictureBox.Image = this.Front;
             this.Power = power;
             this.Suit = suit;
+        }
+
+        /// <summary>
+        /// The path for the image of the back of the card
+        /// </summary>
+        public static string CardBackPath
+        {
+            get
+            {
+                return cardBackPathPath;
+            }
+
+            set
+            {
+                cardBackPathPath = value;
+            }
         }
 
         /// <summary>
@@ -125,12 +140,22 @@
         }
 
         /// <summary>
+        /// Compares 1 card to the other using their power
+        /// </summary>
+        /// <param name="other">The other card we are comparing the current one with</param>
+        /// <returns>An integer indicating their compare value</returns>
+        public int CompareTo(Card other)
+        {
+            return this.Power.CompareTo(other.Power);
+        }
+
+        /// <summary>
         /// Retrieves the back of the card
         /// </summary>
         /// <returns>Returns the image of how the back of the card looks like</returns>
         private static Image GetBackOfCard()
         {
-            var image = Image.FromFile(CardBack);
+            var image = Image.FromFile(CardBackPath);
 
             return image;
         }

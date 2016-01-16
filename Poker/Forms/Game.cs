@@ -69,15 +69,16 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class
         /// </summary>
-        public Game() : this(GlobalConstants.CardPath)
+        public Game() : this(GlobalConstants.CardPath, true)
         {
-            
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class with a path specified used for testing
         /// </summary>
-        public Game(string path)
+        /// <param name="path">The path for the card images</param>
+        /// <param name="wait">If the game should wait for async methods</param>
+        public Game(string path, bool wait)
         {
             instance = this;
             this.InitializeComponent();
@@ -125,7 +126,7 @@
             this.CurrentSmallBlind = DefaultSmallBlindCall;
             this.WindowState = FormWindowState.Maximized;
             this.Deck = new Deck(path);
-            this.Deck.ThrowCards(this.Player, this.Bots);
+            this.Deck.ThrowCards(this.Player, this.Bots, wait);
         }
 
         /// <summary>

@@ -46,7 +46,10 @@
   <ItemGroup>
     <Compile Include="Cards\Card.cs" />
     <Compile Include="Cards\Deck.cs" />
+    <Compile Include="Cards\Hands\Hand.cs" />
+    <Compile Include="Cards\Hands\Power.cs" />
     <Compile Include="Cards\Suit.cs" />
+    <Compile Include="Factories\HandPowerFactory.cs" />
     <Compile Include="Players\Bots\Bot.cs" />
     <Compile Include="Constants\GlobalConstants.cs" />
     <Compile Include="Forms\AddChips.cs">

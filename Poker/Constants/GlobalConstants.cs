@@ -6,6 +6,8 @@
     public static class GlobalConstants
     {
         public const string CardPath = "..\\..\\Resources\\Cards";
+        public const string CardPathFromUnitTest = "..\\..\\..\\Poker\\Resources\\Cards";
+        public const string CardBackForUnitTesting = "..\\..\\..\\Poker\\Resources\\Back\\Back.png";
         public const int StartingNumberOfChips = 10000;
     }
 }

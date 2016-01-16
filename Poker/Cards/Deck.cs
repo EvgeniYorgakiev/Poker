@@ -1,6 +1,4 @@
-﻿using Poker.Constants;
-
-namespace Poker.Cards
+﻿namespace Poker.Cards
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +7,7 @@ namespace Poker.Cards
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+    using Constants;
     using Forms;
     using Players;
     using Players.Bots;
@@ -42,12 +41,12 @@ namespace Poker.Cards
         /// </summary>
         public Deck() : this(GlobalConstants.CardPath)
         {
-            
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Deck"/> class. Used for unit testing
         /// </summary>
+        /// <param name="path">The path for the card images</param>
         public Deck(string path)
         {
             var imageLocations = Directory.GetFiles(
@@ -126,6 +125,7 @@ namespace Poker.Cards
                     {
                         await Task.Delay(300);
                     }
+
                     this.ThrowPlayerCard(bots[i], (i + 1) * NumberOfCardsPerPlayer, wait);
                 }
             }
@@ -146,6 +146,28 @@ namespace Poker.Cards
                 int randomCardIndex1 = random.Next(0, this.Cards.Length);
                 int randomCardIndex2 = random.Next(0, this.Cards.Length);
                 this.SwapCards(randomCardIndex1, randomCardIndex2);
+            }
+        }
+
+        /// <summary>
+        /// Removes the player's currently held cards making room for another hand
+        /// </summary>
+        /// <param name="player">The player that will receive new cards</param>
+        /// <param name="bots">The bots the player will be facing</param>
+        public void RemoveAllCardsOnBoard(HumanPlayer player, List<Bot> bots)
+        {
+            for (int i = 0; i < this.NeutalCards.Length; i++)
+            {
+                if (this.NeutalCards[i] != null)
+                {
+                    Game.Instance.Controls.Remove(this.NeutalCards[i].PictureBox);
+                }
+            }
+
+            this.RemovePlayerCards(player);
+            for (int i = 0; i < bots.Count; i++)
+            {
+                this.RemovePlayerCards(bots[i]);
             }
         }
 
@@ -220,14 +242,18 @@ namespace Poker.Cards
                 {
                     await Task.Delay(200);
                 }
+
                 this.GivePlayerCard(player, startingCardIndexInDeck);
             }
+
+            player.DetermineHandPower(this.NeutalCards);
         }
 
         /// <summary>
         /// Throw the center cards.
         /// </summary>
         /// <param name="wait">If the method should wait for visual effects</param>
+        /// <returns>Returns a task that can be awaited used for async programming.</returns>
         private async Task ThrowCenterCards(bool wait = true)
         {
             int cardIndex = NumberOfCardsPerPlayer * NumberOfPlayers;
@@ -239,29 +265,8 @@ namespace Poker.Cards
                 {
                     await Task.Delay(200);
                 }
+
                 this.NeutalCards[i] = this.NewCard(cardIndex + i, i, locationOfFirstCard, distanceBetweenCards, false);
-            }
-        }
-
-        /// <summary>
-        /// Removes the player's currently held cards making room for another hand
-        /// </summary>
-        /// <param name="player">The player that will receive new cards</param>
-        /// <param name="bots">The bots the player will be facing</param>
-        private void RemoveAllCardsOnBoard(HumanPlayer player, List<Bot> bots)
-        {
-            for (int i = 0; i < this.NeutalCards.Length; i++)
-            {
-                if (this.NeutalCards[i] != null)
-                {
-                    Game.Instance.Controls.Remove(this.NeutalCards[i].PictureBox);
-                }
-            }
-
-            this.RemovePlayerCards(player);
-            for (int i = 0; i < bots.Count; i++)
-            {
-                this.RemovePlayerCards(bots[i]);
             }
         }
 
