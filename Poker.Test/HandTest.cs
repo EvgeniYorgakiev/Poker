@@ -5,6 +5,7 @@
     using Cards.Hands;
     using Constants;
     using Forms;
+    using Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
@@ -42,7 +43,7 @@
         public void TestFindingFlush()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -56,7 +57,7 @@
                 new Card(Card.Back, 10, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>
+            var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 4, Suit.Clubs),
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -77,7 +78,7 @@
         public void TestFindingStraight()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -91,7 +92,7 @@
                 new Card(Card.Back, 10, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>
+            var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 4, Suit.Clubs),
                 new Card(Card.Back, 5, Suit.Diamonds),
@@ -106,13 +107,13 @@
         }
 
         /// <summary>
-        /// Test if finding a straight with carrying works
+        /// Test if finding a straight with carrying backwards works
         /// </summary>
         [TestMethod]
-        public void TestFindingStraightWithCarrying()
+        public void TestFindingStraightWithCarryingBackwards()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Clubs),
@@ -126,13 +127,48 @@
                 new Card(Card.Back, 14, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>
+            var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 13, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Clubs),
                 new Card(Card.Back, 4, Suit.Diamonds),
+            };
+            Assert.IsTrue(
+                this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
+                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required straight was not found when it existed");
+        }
+        
+        /// <summary>
+        /// Test if finding a straight with carrying forward works
+        /// </summary>
+        [TestMethod]
+        public void TestFindingStraightWithCarryingForward()
+        {
+            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
+            this.Game.Player.Cards = new List<ICard>
+            {
+                new Card(Card.Back, 2, Suit.Diamonds),
+                new Card(Card.Back, 3, Suit.Clubs),
+            };
+            this.Game.Deck.NeutalCards = new[]
+            {
+                new Card(Card.Back, 12, Suit.Diamonds),
+                new Card(Card.Back, 7, Suit.Clubs),
+                new Card(Card.Back, 8, Suit.Spades),
+                new Card(Card.Back, 13, Suit.Clubs),
+                new Card(Card.Back, 14, Suit.Clubs),
+            };
+            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            var cardsRequired = new List<ICard>
+            {
+                new Card(Card.Back, 12, Suit.Diamonds),
+                new Card(Card.Back, 13, Suit.Clubs),
+                new Card(Card.Back, 14, Suit.Clubs),
+                new Card(Card.Back, 2, Suit.Diamonds),
+                new Card(Card.Back, 3, Suit.Clubs),
             };
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
@@ -147,7 +183,7 @@
         public void TestFindingStraightFlush()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 8, Suit.Clubs),
@@ -161,7 +197,7 @@
                 new Card(Card.Back, 3, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>
+            var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 4, Suit.Clubs),
                 new Card(Card.Back, 5, Suit.Clubs),
@@ -182,7 +218,7 @@
         public void TestFindingRoyalFlush()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -196,7 +232,7 @@
                 new Card(Card.Back, 9, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 10, Suit.Clubs),
                 new Card(Card.Back, 11, Suit.Clubs),
@@ -217,7 +253,7 @@
         public void TestFindingFourOfAKind()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -231,7 +267,7 @@
                 new Card(Card.Back, 9, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -251,7 +287,7 @@
         public void TestFindingThreeOfAKind()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -265,7 +301,7 @@
                 new Card(Card.Back, 7, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -284,7 +320,7 @@
         public void TestFindingFullHouse()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -298,7 +334,7 @@
                 new Card(Card.Back, 7, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 8, Suit.Spades),
@@ -319,7 +355,7 @@
         public void TestFindingTwoPairs()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -333,7 +369,7 @@
                 new Card(Card.Back, 7, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 8, Suit.Spades),
@@ -353,7 +389,7 @@
         public void TestFindingOnePair()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -367,7 +403,7 @@
                 new Card(Card.Back, 2, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -385,7 +421,7 @@
         public void TestFindingHighCard()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<Card>
+            this.Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 8, Suit.Spades),
@@ -399,7 +435,7 @@
                 new Card(Card.Back, 14, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
-            var cardsRequired = new List<Card>()
+            var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Spades),
             };
@@ -415,7 +451,7 @@
         /// <param name="hand1">The first hand we are comparing</param>
         /// <param name="hand2">The second hand we are comparing</param>
         /// <returns>True if the 2 hands are the same and false if they are not</returns>
-        private bool CardHandsAreEqual(List<Card> hand1, List<Card> hand2)
+        private bool CardHandsAreEqual(List<ICard> hand1, List<ICard> hand2)
         {
             if (hand1.Count != hand2.Count)
             {

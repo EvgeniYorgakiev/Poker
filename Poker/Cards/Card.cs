@@ -3,11 +3,12 @@
     using System;
     using System.Drawing;
     using System.Windows.Forms;
+    using Interfaces;
 
     /// <summary>
     /// Represents a playing card
     /// </summary>
-    public class Card : IComparable<Card>
+    public class Card : ICard
     {
         private static string cardBackPathPath = "..\\..\\Resources\\Back\\Back.png";
         private static Image back;
@@ -144,7 +145,7 @@
         /// </summary>
         /// <param name="other">The other card we are comparing the current one with</param>
         /// <returns>An integer indicating their compare value</returns>
-        public int CompareTo(Card other)
+        public int CompareTo(ICard other)
         {
             return this.Power.CompareTo(other.Power);
         }

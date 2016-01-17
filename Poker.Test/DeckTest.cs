@@ -4,6 +4,7 @@
     using Cards;
     using Constants;
     using Forms;
+    using Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
@@ -57,7 +58,7 @@
             {
                 this.Game.Deck.ThrowCards(this.Game.Player, this.Game.Bots, false);
                 int numberOfCards = 0;
-                HashSet<Card> cards = new HashSet<Card>();
+                HashSet<ICard> cards = new HashSet<ICard>();
                 for (int j = 0; j < this.Game.Player.Cards.Count; j++)
                 {
                     numberOfCards++;

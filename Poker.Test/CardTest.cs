@@ -2,10 +2,11 @@
 {
     using System;
     using Cards;
+    using Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
-    /// Use for testing the <see cref="Card"/> class and their properties
+    /// Use for testing the <see cref="ICard"/> class and their properties
     /// </summary>
     [TestClass]
     public class CardTest

@@ -114,6 +114,7 @@
             this.checkButton.TabIndex = 2;
             this.checkButton.Text = "Check";
             this.checkButton.UseVisualStyleBackColor = true;
+            this.checkButton.Click += new System.EventHandler(this.OnCheck);
             // 
             // callButton
             // 

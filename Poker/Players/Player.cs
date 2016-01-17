@@ -3,24 +3,24 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Windows.Forms;
-    using Cards;
     using Cards.Hands;
     using Factories;
+    using Interfaces;
 
     /// <summary>
     /// The player class. Can be inherited
     /// </summary>
-    public abstract class Player
+    public abstract class Player : IPlayer
     {
         private const string ChipsText = "Chips: ";
 
-        private List<Card> cards;
+        private List<ICard> cards;
         private Point cardStartingPoint;
         private Point cardDistanceFromEachother;
         private int chips;
         private int currentCall;
         private bool hasFolded;
-        private Hand power;
+        private Hand currentHand;
         private Label status;
         private TextBox chipsTextBox;
 
@@ -36,7 +36,7 @@
         {
             this.CardStartingPoint = cardStartingPoint;
             this.CardDistanceFromEachother = cardDistanceFromEachother;
-            this.Cards = new List<Card>();
+            this.Cards = new List<ICard>();
             this.Status = status;
             this.ChipsTextBox = chipsTextBox;
             this.Chips = chips;
@@ -46,7 +46,7 @@
         /// <summary>
         /// The player's cards. Should be 2 on Texas Hold them
         /// </summary>
-        public List<Card> Cards
+        public List<ICard> Cards
         {
             get
             {
@@ -131,12 +131,12 @@
         {
             get
             {
-                return this.power;
+                return this.currentHand;
             }
 
             set
             {
-                this.power = value;
+                this.currentHand = value;
             }
         }
 
@@ -204,9 +204,9 @@
         /// Determines the power of the player's hand taking in account the center cards too.
         /// </summary>
         /// <param name="neutralCards">The cards that are in the center of the board and shared for all players</param>
-        public void DetermineHandPower(Card[] neutralCards)
+        public void DetermineHandPower(ICard[] neutralCards)
         {
-            var knownCards = new List<Card>();
+            var knownCards = new List<ICard>();
             for (int i = 0; i < neutralCards.Length; i++)
             {
                 if (neutralCards[i] != null && neutralCards[i].PictureBox.Image == neutralCards[i].Front)

@@ -5,15 +5,15 @@
     /// </summary>
     public enum Power
     {
-        HighCard,
-        OnePair,
-        TwoPair,
-        ThreeOfAKind,
-        Straigth,
-        Flush,
-        FullHouse,
-        FourOfAKind,
-        StraightFlush,
-        RoyalFlush
+        HighCard = 1,
+        OnePair = 3,
+        TwoPair = 5,
+        ThreeOfAKind = 6,
+        Straigth = 7,
+        Flush = 8,
+        FullHouse = 9,
+        FourOfAKind = 10,
+        StraightFlush = 11,
+        RoyalFlush = 12
     }
 }

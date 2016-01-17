@@ -5,6 +5,7 @@
     using System.Linq;
     using Cards;
     using Cards.Hands;
+    using Interfaces;
 
     /// <summary>
     /// Used for determining the highest possible hand the player has.
@@ -16,7 +17,7 @@
         /// </summary>
         /// <param name="cards">The cards the player can use</param>
         /// <returns>Returns the hand with the strongest cards</returns>
-        public static Hand StrongestHand(List<Card> cards)
+        public static Hand StrongestHand(List<ICard> cards)
         {
             cards.Sort();
             if (cards.Count > 2)
@@ -31,7 +32,7 @@
                 }
                 else
                 {
-                    var handCards = new List<Card>();
+                    var handCards = new List<ICard>();
                     handCards.Add(cards[cards.Count - 1]); ////Last card is the highest since they are sorted
                     return new Hand(Power.HighCard, handCards);
                 }
@@ -47,9 +48,9 @@
         /// </summary>
         /// <param name="cards">The cards the player can use</param>
         /// <returns>Returns the hand with the strongest cards</returns>
-        private static Hand HighestHandWithMoreThan2Cards(List<Card> cards)
+        private static Hand HighestHandWithMoreThan2Cards(List<ICard> cards)
         {
-            var hand = new List<Card>();
+            var hand = new List<ICard>();
             if (TryRoyalFlush(cards, ref hand))
             {
                 return new Hand(Power.RoyalFlush, hand);
@@ -88,7 +89,7 @@
             }
             else
             {
-                var handCards = new List<Card>();
+                var handCards = new List<ICard>();
                 handCards.Add(cards[cards.Count - 1]);
                 return new Hand(Power.HighCard, handCards);
             }
@@ -102,12 +103,12 @@
         /// <param name="numberOfFirstPair">The number of cards we need for the first pair</param>
         /// <param name="numberOfSecondPair">The number of cards we need for the second pair</param>
         /// <returns>Returns true if a royal flush has been found and removes the useless cards from the hand</returns>
-        private static bool TryTwoPairs(List<Card> cards, ref List<Card> hand, int numberOfFirstPair, int numberOfSecondPair)
+        private static bool TryTwoPairs(List<ICard> cards, ref List<ICard> hand, int numberOfFirstPair, int numberOfSecondPair)
         {
-            var firstPair = new List<Card>();
+            var firstPair = new List<ICard>();
             if (TrySeveralOfAKind(cards, ref firstPair, numberOfFirstPair))
             {
-                var newCards = new List<Card>();
+                var newCards = new List<ICard>();
                 for (int i = 0; i < cards.Count; i++)
                 {
                     newCards.Add(cards[i]);
@@ -118,7 +119,7 @@
                     newCards.Remove(firstPair[i]);
                 }
 
-                var secondPair = new List<Card>();
+                var secondPair = new List<ICard>();
                 if (TrySeveralOfAKind(newCards, ref secondPair, numberOfSecondPair))
                 {
                     hand = hand.Concat(secondPair).ToList();
@@ -136,7 +137,7 @@
         /// <param name="cards">The cards the player has access to</param>
         /// <param name="hand">The cards that make up the hand</param>
         /// <returns>Returns true if a royal flush has been found and removes the useless cards from the hand</returns>
-        private static bool TryStraightFlush(List<Card> cards, ref List<Card> hand)
+        private static bool TryStraightFlush(List<ICard> cards, ref List<ICard> hand)
         {
             if (TryFlush(cards, ref hand))
             {
@@ -155,7 +156,7 @@
         /// <param name="cards">The cards the player has access to</param>
         /// <param name="hand">The cards that make up the hand</param>
         /// <returns>Returns true if a royal flush has been found and removes the useless cards from the hand</returns>
-        private static bool TryRoyalFlush(List<Card> cards, ref List<Card> hand)
+        private static bool TryRoyalFlush(List<ICard> cards, ref List<ICard> hand)
         {
             if (TryFlush(cards, ref hand))
             {
@@ -178,20 +179,20 @@
         /// <param name="hand">The cards that make up the hand</param>
         /// <param name="numberOfAKind">The number of same cards required for the hand</param>
         /// <returns>Returns true if a four of a kind has been found and removes the useless cards from the hand</returns>
-        private static bool TrySeveralOfAKind(List<Card> cards, ref List<Card> hand, int numberOfAKind)
+        private static bool TrySeveralOfAKind(List<ICard> cards, ref List<ICard> hand, int numberOfAKind)
         {
-            var cardsByPower = new Dictionary<int, List<Card>>();
+            var cardsByPower = new Dictionary<int, List<ICard>>();
             for (int i = 0; i < cards.Count; i++)
             {
                 if (!cardsByPower.ContainsKey(cards[i].Power))
                 {
-                    cardsByPower.Add(cards[i].Power, new List<Card>());
+                    cardsByPower.Add(cards[i].Power, new List<ICard>());
                 }
 
                 cardsByPower[cards[i].Power].Add(cards[i]);
             }
 
-            var mostCardsWithSameSuit = new List<Card>();
+            var mostCardsWithSameSuit = new List<ICard>();
             foreach (var currentCards in cardsByPower)
             {
                 if (currentCards.Value.Count >= numberOfAKind)
@@ -217,21 +218,21 @@
         /// <param name="cards">The cards the player has access to</param>
         /// <param name="hand">The cards that make up the hand</param>
         /// <returns>Returns true if a flush has been found and removes the useless cards from the hand</returns>
-        private static bool TryFlush(List<Card> cards, ref List<Card> hand)
+        private static bool TryFlush(List<ICard> cards, ref List<ICard> hand)
         {
-            var suitCards = new Dictionary<Suit, List<Card>>();
+            var suitCards = new Dictionary<Suit, List<ICard>>();
             for (int i = 0; i < cards.Count; i++)
             {
                 Suit currentSuit = cards[i].Suit;
                 if (!suitCards.ContainsKey(currentSuit))
                 {
-                    suitCards.Add(currentSuit, new List<Card>());
+                    suitCards.Add(currentSuit, new List<ICard>());
                 }
 
                 suitCards[currentSuit].Add(cards[i]);
             }
 
-            var mostCardsWithSameSuit = new List<Card>();
+            var mostCardsWithSameSuit = new List<ICard>();
             foreach (var currentCards in suitCards)
             {
                 if (currentCards.Value.Count >= 5)
@@ -258,9 +259,9 @@
         /// <param name="cards">The cards the player has access to</param>
         /// <param name="hand">The cards that make up the hand</param>
         /// <returns>Returns true if a straight has been found and removes the useless cards from the hand</returns>
-        private static bool TryStraight(List<Card> cards, ref List<Card> hand)
+        private static bool TryStraight(List<ICard> cards, ref List<ICard> hand)
         {
-            List<Card> currentCards = LongestSequenceOfCards(cards);
+            List<ICard> currentCards = LongestSequenceOfCards(cards);
             if (currentCards.Count < 5)
             {
                 return false;
@@ -277,28 +278,58 @@
         /// </summary>
         /// <param name="cards">The cards in the hand</param>
         /// <returns>Returns a list of cards with a difference of only 1 from each other's neighbors</returns>
-        private static List<Card> LongestSequenceOfCards(List<Card> cards)
+        private static List<ICard> LongestSequenceOfCards(List<ICard> cards)
         {
-            List<Card> longestSequence = new List<Card>();
-            longestSequence.Add(cards[0]);
-            for (int i = 1; i < cards.Count; i++)
+            var allSequence = AllSequence(cards);
+
+            var longestSequence = LongestSequence(allSequence);
+
+            TryToGoBackWithCarrying(cards, longestSequence);
+
+            TryToGoForwardWithCarrying(cards, longestSequence);
+
+            return longestSequence;
+        }
+
+        /// <summary>
+        /// Try to for forward from an Ace to Two if possible in order to find the best sequence
+        /// </summary>
+        /// <param name="cards">A list of all possible cards</param>
+        /// <param name="longestSequence">The current longest sequence</param>
+        private static void TryToGoForwardWithCarrying(List<ICard> cards, List<ICard> longestSequence)
+        {
+            bool canCarryForward = cards[0].Power == 2 && longestSequence[longestSequence.Count - 1].Power == 14;
+            if (canCarryForward)
             {
-                ////In the case it is 0 we just need to skip it
-                if (cards[i].Power - cards[i - 1].Power == 1)
+                longestSequence.Add(cards[0]);
+                for (int i = 1; i < cards.Count; i++)
                 {
-                    longestSequence.Add(cards[i]);
-                } 
-                else if (cards[i].Power - cards[i - 1].Power > 1)
-                {
-                    break;
+                    ////In the case it is 0 we just need to skip it
+                    if (cards[i].Power - cards[i - 1].Power == 1)
+                    {
+                        longestSequence.Add(cards[i]);
+                    }
+                    else if (cards[i].Power - cards[i - 1].Power > 1)
+                    {
+                        break;
+                    }
                 }
             }
+        }
 
-            if (cards[0].Power == 2 && cards[cards.Count - 1].Power == 14)
+        /// <summary>
+        /// Try to for backwards from Two to an Ace if possible in order to find the best sequence
+        /// </summary>
+        /// <param name="cards">A list of all possible cards</param>
+        /// <param name="longestSequence">The current longest sequence</param>
+        private static void TryToGoBackWithCarrying(List<ICard> cards, List<ICard> longestSequence)
+        {
+            bool canCarryBackwards = longestSequence[0].Power == 2 && cards[cards.Count - 1].Power == 14;
+            if (canCarryBackwards)
             {
                 longestSequence.Insert(0, cards[cards.Count - 1]);
                 for (int i = cards.Count - 2; i > 0; i--)
-                {                    
+                {
                     ////In the case it is 0 we just need to skip it
                     if (cards[i + 1].Power - cards[i].Power == 1)
                     {
@@ -310,8 +341,56 @@
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Longest sequence of cards in a list of sequences
+        /// </summary>
+        /// <param name="allSequence">All of the possible sequences of cards</param>
+        /// <returns>The longest sequence of cards with a difference of 1</returns>
+        private static List<ICard> LongestSequence(List<List<ICard>> allSequence)
+        {
+            int longestSequenceIndex = 0;
+            int longestSequenceNumber = allSequence[0].Count;
+            for (int i = 1; i < allSequence.Count; i++)
+            {
+                if (longestSequenceNumber <= allSequence[i].Count)
+                {
+                    longestSequenceNumber = allSequence[i].Count;
+                    longestSequenceIndex = i;
+                }
+            }
+
+            var longestSequence = allSequence[longestSequenceIndex];
 
             return longestSequence;
+        }
+
+        /// <summary>
+        /// Retrieves all possible sequences of cards with a difference of 1
+        /// </summary>
+        /// <param name="cards">All of the possible cards</param>
+        /// <returns>Returns a list of all sequences</returns>
+        private static List<List<ICard>> AllSequence(List<ICard> cards)
+        {
+            var allSequence = new List<List<ICard>>();
+            allSequence.Add(new List<ICard>());
+            allSequence[0].Add(cards[0]);
+            for (int i = 1; i < cards.Count; i++)
+            {
+                ////In the case it is 0 we just need to skip it
+                if (cards[i].Power - cards[i - 1].Power == 1)
+                {
+                    allSequence[allSequence.Count - 1].Add(cards[i]);
+                }
+                else if (cards[i].Power - cards[i - 1].Power > 1)
+                {
+                    allSequence.Add(new List<ICard>());
+                    allSequence[allSequence.Count - 1].Add(cards[i]);
+                }
+            }
+
+            return allSequence;
         }
     }
 }

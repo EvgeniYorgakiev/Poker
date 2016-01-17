@@ -50,6 +50,10 @@
     <Compile Include="Cards\Hands\Power.cs" />
     <Compile Include="Cards\Suit.cs" />
     <Compile Include="Factories\HandPowerFactory.cs" />
+    <Compile Include="Interfaces\IBot.cs" />
+    <Compile Include="Interfaces\ICard.cs" />
+    <Compile Include="Interfaces\IDeck.cs" />
+    <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Players\Bots\Bot.cs" />
     <Compile Include="Constants\GlobalConstants.cs" />
     <Compile Include="Forms\AddChips.cs">
@@ -156,9 +160,7 @@
     <Content Include="Resources\Cards\9_of_hearts.png" />
     <Content Include="Resources\Cards\9_of_spades.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

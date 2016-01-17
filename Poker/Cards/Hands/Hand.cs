@@ -1,6 +1,7 @@
 ﻿namespace Poker.Cards.Hands
 {
     using System.Collections.Generic;
+    using Interfaces;
 
     /// <summary>
     /// Represents a hand of several cards and the hand's power
@@ -8,14 +9,14 @@
     public class Hand
     {
         private Power handPower;
-        private List<Card> cards;
+        private List<ICard> cards;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Hand"/> class
         /// </summary>
         /// <param name="handPower">The <see cref="Power"/> of the hand</param>
         /// <param name="cards">The list of cards that make up the current hand</param>
-        public Hand(Power handPower, List<Card> cards)
+        public Hand(Power handPower, List<ICard> cards)
         {
             this.HandPower = handPower;
             this.Cards = cards;
@@ -34,7 +35,7 @@
             }
         }
 
-        public List<Card> Cards
+        public List<ICard> Cards
         {
             get
             {

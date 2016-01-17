@@ -6,7 +6,7 @@
     using System.Windows.Forms;
     using Cards;
     using Constants;
-    using Players;
+    using Interfaces;
     using Players.Bots;
     using Players.Humans;
 
@@ -18,6 +18,8 @@
         ////Cards
         private const int CardDistanceX = 100;
         private const int CardDistanceY = 0;
+        private const int CardsToRevealFirstTime = 3;
+        private const int CardsToRevealSecondTime = 2;
 
         ////Players
         private const int PlayerCardXPosition = 635;
@@ -62,9 +64,9 @@
         private int currentSmallBlind;
         private int currentBigBlind;
         private bool isUsingBigBlind;
-        private Deck deck;
-        private HumanPlayer player;
-        private List<Bot> bots;
+        private IDeck deck;
+        private IPlayer player;
+        private List<IBot> bots;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class
@@ -88,7 +90,7 @@
                 GlobalConstants.StartingNumberOfChips,
                 this.playerStatus,
                 this.playerTextboxChips);
-            this.Bots = new List<Bot>
+            this.Bots = new List<IBot>
             {
                 new Bot(
                     new Point(Bot1CardXPosition, Bot1CardYPosition),
@@ -215,7 +217,7 @@
         /// <summary>
         /// The deck in the game.
         /// </summary>
-        public Deck Deck
+        public IDeck Deck
         {
             get
             {
@@ -231,7 +233,7 @@
         /// <summary>
         /// The human player in the game
         /// </summary>
-        public HumanPlayer Player
+        public IPlayer Player
         {
             get
             {
@@ -247,7 +249,7 @@
         /// <summary>
         /// All of the bots that the player will be facing
         /// </summary>
-        public List<Bot> Bots
+        public List<IBot> Bots
         {
             get
             {
@@ -307,7 +309,7 @@
         /// </summary>
         /// <param name="currentPlayer">The player that raises the bet</param>
         /// <param name="raiseValue">The value the player wishes to raises with.</param>
-        public void RaiseBet(Player currentPlayer, int raiseValue)
+        public void RaiseBet(IPlayer currentPlayer, int raiseValue)
         {
             this.potTextbox.Text = (int.Parse(this.potTextbox.Text) + raiseValue).ToString();
             currentPlayer.Chips -= raiseValue;
@@ -319,7 +321,7 @@
         /// The player calls on the blind without raising updating the textboxes and the chips
         /// </summary>
         /// <param name="currentPlayer">The player that calls</param>
-        public void CallForPlayer(Player currentPlayer)
+        public void CallForPlayer(IPlayer currentPlayer)
         {
             int differenceInCall = this.Call - currentPlayer.CurrentCall;
             this.potTextbox.Text = (int.Parse(this.potTextbox.Text) + differenceInCall).ToString();
@@ -434,6 +436,16 @@
         {
             this.EnableButtons(false, false, false, false);
             this.CallForPlayer(this.Player);
+            this.OnCheck(sender, e);
+        }
+
+        /// <summary>
+        /// The event triggers when the check or call buttons are clicked
+        /// </summary>
+        /// <param name="sender">The sender of the events</param>
+        /// <param name="e">The event arguments</param>
+        private void OnCheck(object sender, EventArgs e)
+        {
             bool thereIsABotStillPlaying = false;
             for (int i = 0; i < this.Bots.Count; i++)
             {
@@ -457,13 +469,44 @@
             {
                 this.EnableButtons(true, false, true, true);
             }
+
+            this.EndTurn();
+        }
+
+        /// <summary>
+        /// Used for when the turn has ended to know if it should reveal the other cards
+        /// </summary>
+        private void EndTurn()
+        {
+            if (this.Call == this.Player.CurrentCall)
+            {
+                if (this.Deck.NeutalCards[0].PictureBox.Image == Card.Back)
+                {
+                    for (int i = 0; i < CardsToRevealFirstTime; i++)
+                    {
+                        this.Deck.NeutalCards[i].PictureBox.Image = this.Deck.NeutalCards[i].Front;
+                    }
+                }
+                else if (this.Deck.NeutalCards[CardsToRevealFirstTime].PictureBox.Image == Card.Back)
+                {
+                    for (int i = CardsToRevealFirstTime; i < CardsToRevealSecondTime + CardsToRevealFirstTime; i++)
+                    {
+                        this.Deck.NeutalCards[i].PictureBox.Image = this.Deck.NeutalCards[i].Front;
+                    }
+                }
+
+                for (int i = 0; i < this.Bots.Count; i++)
+                {
+                    this.Bots[i].RaisedThisTurn = false;
+                }
+            }
         }
 
         /// <summary>
         /// Adds the money from to pot to the player
         /// </summary>
         /// <param name="winner">The winner in the current hand</param>
-        private void HandWinner(Player winner)
+        private void HandWinner(IPlayer winner)
         {
             winner.Chips += int.Parse(this.potTextbox.Text);
             this.potTextbox.Text = PotDefaultMoney;

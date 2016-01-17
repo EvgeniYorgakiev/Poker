@@ -9,14 +9,13 @@
     using System.Windows.Forms;
     using Constants;
     using Forms;
-    using Players;
+    using Interfaces;
     using Players.Bots;
-    using Players.Humans;
 
     /// <summary>
     /// Represents a 52 card deck of the standard poker game
     /// </summary>
-    public class Deck
+    public class Deck : IDeck
     {
         private const string CardExtension = ".png";
 
@@ -33,8 +32,8 @@
         private const int DefaultCardHeight = 110;
         private const int DefaultCardWidth = (int)(DefaultCardHeight / 1.625);
 
-        private Card[] cards = new Card[DeckSize];
-        private Card[] neutralCards = new Card[NeutralCardsNumber];
+        private ICard[] cards = new ICard[DeckSize];
+        private ICard[] neutralCards = new ICard[NeutralCardsNumber];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Deck"/> class
@@ -70,7 +69,7 @@
         /// <summary>
         /// Represents an array of all 52 cards in the standard deck
         /// </summary>
-        public Card[] Cards
+        public ICard[] Cards
         {
             get
             {
@@ -86,7 +85,7 @@
         /// <summary>
         /// Represents an array of the 5 cards that are in the center of the table
         /// </summary>
-        public Card[] NeutalCards
+        public ICard[] NeutalCards
         {
             get
             {
@@ -105,7 +104,7 @@
         /// <param name="player">The human player in the game</param>
         /// <param name="bots">All of the bots that the player will be facing</param>
         /// <param name="wait">If the method should wait for visual effects</param>
-        public async void ThrowCards(HumanPlayer player, List<Bot> bots, bool wait = true)
+        public async void ThrowCards(IPlayer player, List<IBot> bots, bool wait = true)
         {
             Game.Instance.FixCall();
 
@@ -154,7 +153,7 @@
         /// </summary>
         /// <param name="player">The player that will receive new cards</param>
         /// <param name="bots">The bots the player will be facing</param>
-        public void RemoveAllCardsOnBoard(HumanPlayer player, List<Bot> bots)
+        public void RemoveAllCardsOnBoard(IPlayer player, List<IBot> bots)
         {
             for (int i = 0; i < this.NeutalCards.Length; i++)
             {
@@ -231,7 +230,7 @@
         /// <param name="player">The player we wish to give cards to.</param>
         /// <param name="startingCardIndexInDeck">The starting index of the cards in the deck we will give to the player.</param>
         /// <param name="wait">If the method should wait for visual effects</param>
-        private async void ThrowPlayerCard(Player player, int startingCardIndexInDeck, bool wait = true)
+        private async void ThrowPlayerCard(IPlayer player, int startingCardIndexInDeck, bool wait = true)
         {
             this.RemovePlayerCards(player);
             player.HasFolded = false;
@@ -274,7 +273,7 @@
         /// Removes the player's currently held cards making room for another hand
         /// </summary>
         /// <param name="player">The player that will receive new cards</param>
-        private void RemovePlayerCards(Player player)
+        private void RemovePlayerCards(IPlayer player)
         {
             for (int i = 0; i < player.Cards.Count; i++)
             {
@@ -282,7 +281,7 @@
                 Game.Instance.Controls.Remove(player.Cards[i].PictureBox);
             }
 
-            player.Cards = new List<Card>();
+            player.Cards = new List<ICard>();
         }
 
         /// <summary>
@@ -290,7 +289,7 @@
         /// </summary>
         /// <param name="player">The player we wish to give cards to.</param>
         /// <param name="startingCardIndexInDeck">The starting index of the cards in the deck we will give to the player.</param>
-        private void GivePlayerCard(Player player, int startingCardIndexInDeck)
+        private void GivePlayerCard(IPlayer player, int startingCardIndexInDeck)
         {
             int numberOfCardForPlayer = player.Cards.Count;
             int cardIndex = startingCardIndexInDeck + numberOfCardForPlayer;
@@ -322,7 +321,7 @@
         /// <param name="distance">The distance between the cards</param>
         /// <param name="isFacingUp">If the card is facing up or down</param>
         /// <returns>A new card with all of it's necessary fields set.</returns>
-        private Card NewCard(int cardIndex, int numberOfCard, Point location, Point distance, bool isFacingUp)
+        private ICard NewCard(int cardIndex, int numberOfCard, Point location, Point distance, bool isFacingUp)
         {
             var currentCard = this.Cards[cardIndex];
             currentCard.PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
