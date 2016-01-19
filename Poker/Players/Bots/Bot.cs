@@ -3,6 +3,7 @@
     using System;
     using System.Drawing;
     using System.Windows.Forms;
+    using Constants;
     using Forms;
     using Interfaces;
 
@@ -13,13 +14,6 @@
     {
         private const int MinimumNumberDifference = 4;
         private const int MaximumNumberDifference = 4;
-
-        ////Decisions numbers
-        private const int MaximumValueToDecideToFold = 0;
-        private const int MaximumValueToDecideToCall = 3;
-        private const int MaximumValueToDecideToRaiseWithSmallSum = 8;
-        private const int SmallSumRaisePercentage = 10;
-        private const int BigSumRaisePercentage = 20;
 
         private bool raisedThisTurn;
 
@@ -57,21 +51,30 @@
         /// The bot's AI logic for every turn
         /// </summary>
         /// <param name="botIndex">the index of the bot in order to create a correct message box</param>
-        public void TakeTurn(int botIndex)
+        /// <param name="numberInsteadOfRandom">Used for specific testing instead of a random number</param>
+        public void TakeTurn(int botIndex, int numberInsteadOfRandom = GlobalConstants.DefaultNumberInsteadOfRandom)
         {
             if (this.HasFolded)
             {
                 return;
             }
 
-            MessageBox.Show(string.Format("{0} {1}'s Turn", this.GetType().Name, botIndex));
+            if (numberInsteadOfRandom == GlobalConstants.DefaultNumberInsteadOfRandom)
+            {
+                MessageBox.Show(string.Format("{0} {1}'s Turn", this.GetType().Name, botIndex));
+            }
 
             this.DetermineHandPower(Game.Instance.Deck.NeutalCards);
 
-            Random random = new Random();
-            int randomBehaviourNumber = random.Next(
-                (int)this.CurrentHand.HandPower - MinimumNumberDifference,
-                (int)this.CurrentHand.HandPower + MaximumNumberDifference);
+            int randomBehaviourNumber = numberInsteadOfRandom;
+
+            if (numberInsteadOfRandom == GlobalConstants.DefaultNumberInsteadOfRandom)
+            {
+                Random random = new Random();
+                randomBehaviourNumber = random.Next(
+                    (int)this.CurrentHand.HandPower - MinimumNumberDifference,
+                    (int)this.CurrentHand.HandPower + MaximumNumberDifference);
+            }
 
             this.TakeTurnBasedOnDecision(randomBehaviourNumber);
 
@@ -84,11 +87,11 @@
         /// <param name="randomBehaviourNumber">A random number that is based on the bot's hand power too</param>
         private void TakeTurnBasedOnDecision(int randomBehaviourNumber)
         {
-            if (randomBehaviourNumber <= MaximumValueToDecideToFold)
+            if (randomBehaviourNumber <= GlobalConstants.MaximumValueToDecideToFold)
             {
                 this.Fold();
             }
-            else if (randomBehaviourNumber < MaximumValueToDecideToCall)
+            else if (randomBehaviourNumber < GlobalConstants.MaximumValueToDecideToCall)
             {
                 this.CallBlind();
                 this.RaisedThisTurn = false;
@@ -96,13 +99,13 @@
             else if (!this.RaisedThisTurn)
             {
                 decimal raiseValue = 0;
-                if (randomBehaviourNumber < MaximumValueToDecideToRaiseWithSmallSum)
+                if (randomBehaviourNumber < GlobalConstants.MaximumValueToDecideToRaiseWithSmallSum)
                 {
-                    raiseValue = SmallSumRaisePercentage / 100m;
+                    raiseValue = GlobalConstants.SmallSumRaisePercentage / 100m;
                 }
                 else
                 {
-                    raiseValue = BigSumRaisePercentage / 100m;
+                    raiseValue = GlobalConstants.BigSumRaisePercentage / 100m;
                 }
 
                 this.Raise((int)(this.Chips * raiseValue));

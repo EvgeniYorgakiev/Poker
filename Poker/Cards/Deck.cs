@@ -233,6 +233,11 @@
         private async void ThrowPlayerCard(IPlayer player, int startingCardIndexInDeck, bool wait = true)
         {
             this.RemovePlayerCards(player);
+            if (player.Chips < 0)
+            {
+                return;
+            }
+
             player.HasFolded = false;
             ////We use a starting card index in the deck instead of random so that we don't end up giving the same card to 2 players
             for (int i = 0; i < NumberOfCardsPerPlayer; i++)

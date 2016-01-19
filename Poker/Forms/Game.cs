@@ -5,7 +5,9 @@
     using System.Drawing;
     using System.Windows.Forms;
     using Cards;
+    using Cards.Hands;
     using Constants;
+    using Factories;
     using Interfaces;
     using Players.Bots;
     using Players.Humans;
@@ -19,7 +21,8 @@
         private const int CardDistanceX = 100;
         private const int CardDistanceY = 0;
         private const int CardsToRevealFirstTime = 3;
-        private const int CardsToRevealSecondTime = 2;
+        private const int CardsToRevealSecondTime = 1;
+        private const int CardsToRevealThirdTime = 1;
 
         ////Players
         private const int PlayerCardXPosition = 635;
@@ -47,16 +50,25 @@
         private const int DefaultSmallBlindCall = 250;
         private const int LowestSmallBlind = 250;
         private const int MaximumSmallBlind = 100000;
-        private const string BlindNeedsRoundNumber = "The blind can be only a round number !";
+        private const string TextBoxNeedsRoundNumber = "The blind can be only a round number !";
         private const string NumberOnlyField = "This is a number only field";
-        private const string MaximumValueOfBlindText = "The maximum value of the current blind is ";
-        private const string MinimumValueOfBlindText = "The minimum value of the current blind is ";
+        private const string MaximumValueOfNumberText = "The maximum value of the this number can be ";
+        private const string MinimumValueOfNumberText = "The minimum value of the this number can be ";
         private const string ChangesSavedText =
             "The changes have been saved ! They will become available the next hand you play. ";
 
         //// Calls
         private const string CallText = "Call ";
         private const string PotDefaultMoney = "0";
+
+        //// Wins
+        private const string BotWinsText = "Bot {0} Wins";
+        private const string PlayerWinsText = "Player Wins";
+        private const string BotWinsWithHandText = "Bot {0} wins with {1}";
+        private const string PlayerWinsWithHandText = "Player wins with {0}";
+        private const string TieWithHandText = "Tie with {0}. The pot is split between";
+        private const string PlayerText = " Player";
+        private const string BotText = " Bot";
 
         private static readonly object Padlock = new object();
         private static Game instance;
@@ -142,7 +154,7 @@
                 {
                     if (instance == null)
                     {
-                        instance = new Game();
+                        return new Game();
                     }
 
                     return instance;
@@ -330,14 +342,80 @@
         }
 
         /// <summary>
+        /// After all of the cards have been revealed and the betting has finished determines who the winner is.
+        /// </summary>
+        /// <returns>Returns all of the players that are in tie for the strongest hand</returns>
+        public List<IPlayer> DetermineWinner()
+        {
+            Power strongestHand = this.Player.CurrentHand.HandPower;
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                if (this.Bots[i].CurrentHand.HandPower > strongestHand && !this.Bots[i].HasFolded)
+                {
+                    strongestHand = this.Bots[i].CurrentHand.HandPower;
+                }
+            }
+
+            var winners = new List<IPlayer>();
+            if (strongestHand == this.Player.CurrentHand.HandPower)
+            {
+                winners.Add(this.Player);
+            }
+
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                if (strongestHand == this.Bots[i].CurrentHand.HandPower && !this.Bots[i].HasFolded)
+                {
+                    winners.Add(this.Bots[i]);
+                }
+            }
+
+            var winnersInTie = new List<IPlayer>();
+            if (winners.Count == 1)
+            {
+                winnersInTie.Add(winners[0]);
+            }
+            else
+            {
+                winnersInTie = WinningHandFactory.WinnersInTie(winners, strongestHand);
+            }
+
+            return winnersInTie;
+        }
+
+        /// <summary>
+        /// Give the pot money to the winner and start a new hand
+        /// </summary>
+        /// <param name="winners">The winners of the current hand. Can be more than 1. In that case the money is split</param>
+        private void EndHand(List<IPlayer> winners)
+        {
+            int potMoney = int.Parse(this.potTextbox.Text);
+            int moneyPerPlayer = potMoney / winners.Count;
+            for (int i = 0; i < winners.Count; i++)
+            {
+                winners[i].Chips += moneyPerPlayer;
+            }
+
+            this.Call = 0;
+            this.Player.CurrentCall = 0;
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                this.Bots[i].CurrentCall = 0;
+            }
+
+            this.FixCall();
+            this.potTextbox.Text = PotDefaultMoney;
+        }
+
+        /// <summary>
         /// The event triggers when the blind options button is clicked
         /// </summary>
         /// <param name="sender">The sender of the events</param>
         /// <param name="e">The event arguments</param>
         private void OnBlindOptionsClick(object sender, EventArgs e)
         {
-            this.bigBlindTextBox.Text = 500.ToString();
-            this.smallBlindTextBox.Text = 250.ToString();
+            this.bigBlindTextBox.Text = DefaultBigBlindCall.ToString();
+            this.smallBlindTextBox.Text = DefaultSmallBlindCall.ToString();
             if (this.bigBlindTextBox.Visible == false)
             {
                 this.bigBlindTextBox.Visible = true;
@@ -403,10 +481,31 @@
         /// <param name="maximumValue">the highest value the blind can take</param>
         private void ChangeBlind(TextBox textBox, ref int currentValue, int lowestValue, int maximumValue)
         {
-            int parsedValue;
+            int parsedValue = 0;
+            if (!this.ValidNumber(textBox, ref parsedValue, lowestValue, maximumValue))
+            {
+                return;
+            }
+            else if (parsedValue >= lowestValue && parsedValue <= maximumValue)
+            {
+                currentValue = parsedValue;
+                MessageBox.Show(ChangesSavedText);
+            }
+        }
+
+        /// <summary>
+        /// Check if the text in a text box is a valid number for that text box
+        /// </summary>
+        /// <param name="textBox">The text box that holds the text</param>
+        /// <param name="parsedValue">The value of the text box if it is a valid number</param>
+        /// <param name="lowestValue">The lowest possible value the number can have</param>
+        /// <param name="maximumValue">The maximum value the number can have</param>
+        /// <returns>True if the text in the text box is a valid number and false if it isn't</returns>
+        private bool ValidNumber(TextBox textBox, ref int parsedValue, int lowestValue, int maximumValue)
+        {
             if (textBox.Text.Contains(",") || textBox.Text.Contains("."))
             {
-                MessageBox.Show(BlindNeedsRoundNumber);
+                MessageBox.Show(TextBoxNeedsRoundNumber);
             }
             else if (!int.TryParse(textBox.Text, out parsedValue))
             {
@@ -414,17 +513,18 @@
             }
             else if (parsedValue > maximumValue)
             {
-                MessageBox.Show(MaximumValueOfBlindText + maximumValue);
+                MessageBox.Show(MaximumValueOfNumberText + maximumValue);
             }
             else if (parsedValue < lowestValue)
             {
-                MessageBox.Show(MinimumValueOfBlindText + lowestValue);
+                MessageBox.Show(MinimumValueOfNumberText + lowestValue);
             }
-            else if (parsedValue >= lowestValue && parsedValue <= maximumValue)
+            else
             {
-                currentValue = parsedValue;
-                MessageBox.Show(ChangesSavedText);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -458,7 +558,8 @@
 
             if (!thereIsABotStillPlaying)
             {
-                this.HandWinner(this.Player);
+                MessageBox.Show(string.Format(PlayerWinsText));
+                this.EndHand(new List<IPlayer>() { this.Player });
             }
 
             if (this.Player.CurrentCall == this.Call)
@@ -480,19 +581,36 @@
         {
             if (this.Call == this.Player.CurrentCall)
             {
-                if (this.Deck.NeutalCards[0].PictureBox.Image == Card.Back)
+                if (this.ShouldRevealCards(this.Deck.NeutalCards, 0))
                 {
-                    for (int i = 0; i < CardsToRevealFirstTime; i++)
-                    {
-                        this.Deck.NeutalCards[i].PictureBox.Image = this.Deck.NeutalCards[i].Front;
-                    }
+                    this.RevealCards(
+                        this.Deck.NeutalCards,
+                        0,
+                        CardsToRevealFirstTime);
                 }
-                else if (this.Deck.NeutalCards[CardsToRevealFirstTime].PictureBox.Image == Card.Back)
+                else if (this.ShouldRevealCards(this.Deck.NeutalCards, CardsToRevealFirstTime))
                 {
-                    for (int i = CardsToRevealFirstTime; i < CardsToRevealSecondTime + CardsToRevealFirstTime; i++)
-                    {
-                        this.Deck.NeutalCards[i].PictureBox.Image = this.Deck.NeutalCards[i].Front;
-                    }
+                    this.RevealCards(
+                        this.Deck.NeutalCards,
+                        CardsToRevealFirstTime,
+                        CardsToRevealSecondTime + CardsToRevealFirstTime);
+                }
+                else if (this.ShouldRevealCards(this.Deck.NeutalCards, CardsToRevealSecondTime + CardsToRevealFirstTime))
+                {
+                    this.RevealCards(
+                        this.Deck.NeutalCards,
+                        CardsToRevealSecondTime + CardsToRevealFirstTime,
+                        CardsToRevealThirdTime + CardsToRevealSecondTime + CardsToRevealFirstTime);
+                }
+                else
+                {
+                    var winnersInTie = this.DetermineWinner();
+
+                    this.RevealCards();
+
+                    this.ShowMessageWithWinner(winnersInTie);
+
+                    this.EndHand(winnersInTie);
                 }
 
                 for (int i = 0; i < this.Bots.Count; i++)
@@ -503,15 +621,95 @@
         }
 
         /// <summary>
-        /// Adds the money from to pot to the player
+        /// Reveals all of the players hands
         /// </summary>
-        /// <param name="winner">The winner in the current hand</param>
-        private void HandWinner(IPlayer winner)
+        private void RevealCards()
         {
-            winner.Chips += int.Parse(this.potTextbox.Text);
-            this.potTextbox.Text = PotDefaultMoney;
-            this.Call = 0;
-            this.FixCall();
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                if (!this.Bots[i].HasFolded)
+                {
+                    for (int j = 0; j < this.Bots[i].Cards.Count; j++)
+                    {
+                        this.Bots[i].Cards[j].PictureBox.Image = this.Bots[i].Cards[j].Front;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Prints a message based on the winners
+        /// </summary>
+        /// <param name="winners">All of the winners with winning hands</param>
+        private void ShowMessageWithWinner(List<IPlayer> winners)
+        {
+            if (winners.Count == 1)
+            {
+                if (winners[0] is HumanPlayer)
+                {
+                    MessageBox.Show(string.Format(PlayerWinsWithHandText, winners[0].CurrentHand.HandPower));
+                }
+                else
+                {
+                    for (int i = 0; i < this.Bots.Count; i++)
+                    {
+                        if (winners[0] == this.Bots[i])
+                        {
+                            MessageBox.Show(string.Format(BotWinsWithHandText, i + 1, winners[0].CurrentHand.HandPower));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                string tieText = string.Format(TieWithHandText, winners[0].CurrentHand.HandPower);
+                for (int i = 0; i < winners.Count; i++)
+                {
+                    if (winners[0] is HumanPlayer)
+                    {
+                        tieText += PlayerText;
+                    }
+                    else
+                    {
+                        for (int j = 0; j < this.Bots.Count; j++)
+                        {
+                            if (winners[0] == this.Bots[j])
+                            {
+                                tieText += BotText + " " + (j + 1);
+                            }
+                        }
+                    }
+                }
+
+                MessageBox.Show(string.Format(tieText));
+            }
+        }
+
+        /// <summary>
+        /// Determines if the card at the given index should be revealed
+        /// </summary>
+        /// <param name="cards">The array of cards to reveal</param>
+        /// <param name="index">The index of the card to reveal</param>
+        /// <returns>Returns true if the card is facing down and should be revealed or false if not.</returns>
+        private bool ShouldRevealCards(ICard[] cards, int index)
+        {
+            bool shouldReveal = cards[index].PictureBox.Image != cards[index].Front;
+
+            return shouldReveal;
+        }
+
+        /// <summary>
+        /// Reveals all of the cards in the array between the start index and end index
+        /// </summary>
+        /// <param name="cards">The array of cards to reveal</param>
+        /// <param name="startIndex">The starting index of cards to reveal in the array</param>
+        /// <param name="endIndex">The final index of cards to reveal in the array</param>
+        private void RevealCards(ICard[] cards, int startIndex, int endIndex)
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                cards[i].PictureBox.Image = cards[i].Front;
+            }
         }
 
         /// <summary>
@@ -539,7 +737,8 @@
                 {
                     if (numberOfFoldedBots == this.Bots.Count - 1)
                     {
-                        this.HandWinner(this.Bots[i]);
+                        MessageBox.Show(string.Format(BotWinsText, i));
+                        this.EndHand(new List<IPlayer> { this.Bots[i] });
                         return;
                     }
 
@@ -560,7 +759,8 @@
             {
                 if (!this.Bots[i].HasFolded)
                 {
-                    this.HandWinner(this.Bots[i]);
+                    MessageBox.Show(string.Format(BotWinsText, i));
+                    this.EndHand(new List<IPlayer> { this.Bots[i] });
                 }
             }
         }

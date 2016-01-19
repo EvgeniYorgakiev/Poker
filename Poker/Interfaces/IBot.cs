@@ -1,5 +1,7 @@
 ﻿namespace Poker.Interfaces
 {
+    using Constants;
+
     public interface IBot : IPlayer
     {
         /// <summary>
@@ -11,6 +13,7 @@
         /// The bot's AI logic for every turn
         /// </summary>
         /// <param name="botIndex">the index of the bot in order to create a correct message box</param>
-        void TakeTurn(int botIndex);
+        /// <param name="numberInsteadOfRandom">Used for specific testing instead of a random number</param>
+        void TakeTurn(int botIndex, int numberInsteadOfRandom = GlobalConstants.DefaultNumberInsteadOfRandom);
     }
 }

@@ -1,12 +1,13 @@
-﻿namespace Poker.Test
+﻿namespace PokerTests
 {
+    using System;
     using System.Collections.Generic;
-    using Cards;
-    using Cards.Hands;
-    using Constants;
-    using Forms;
-    using Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Poker.Cards;
+    using Poker.Cards.Hands;
+    using Poker.Constants;
+    using Poker.Forms;
+    using Poker.Interfaces;
 
     /// <summary>
     /// Use for testing the <see cref="Deck"/> class and the methods inside of it
@@ -35,7 +36,39 @@
             Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
             this.Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
         }
-        
+
+        /// <summary>
+        /// Test if it will throw an exception with 0 cards
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), "The player must have atleast 1 card before determining his hand power")]
+        public void TestWith0Cards()
+        {
+            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
+            this.Game.Player.Cards = new List<ICard>();
+            this.Game.Deck.NeutalCards = new ICard[5];
+            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+        }
+
+        /// <summary>
+        /// Test if it will throw an exception with 0 cards
+        /// </summary>
+        [TestMethod]
+        public void TestWith1Card()
+        {
+            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
+            this.Game.Player.Cards = new List<ICard>()
+            {
+                new Card(Card.Back, 2, Suit.Clubs),
+            };
+            this.Game.Deck.NeutalCards = new ICard[5];
+            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Assert.IsTrue(
+                this.Game.Player.CurrentHand.HandPower == Power.HighCard &&
+                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, this.Game.Player.Cards),
+                "The required flush was not found when it existed");
+        }
+
         /// <summary>
         /// Test if finding a flush works
         /// </summary>
@@ -297,8 +330,8 @@
                 new Card(Card.Back, 10, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
                 new Card(Card.Back, 14, Suit.Spades),
-                new Card(Card.Back, 3, Suit.Hearts),
-                new Card(Card.Back, 7, Suit.Clubs),
+                new Card(Card.Back, 7, Suit.Hearts),
+                new Card(Card.Back, 6, Suit.Clubs),
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()

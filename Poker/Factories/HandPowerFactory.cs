@@ -24,22 +24,31 @@
             {
                 return HighestHandWithMoreThan2Cards(cards);
             }
-            else if (cards.Count == 2)
+            else if (cards.Count >= 1)
             {
-                if (cards[0].Power == cards[1].Power)
+                if (cards.Count == 2)
                 {
-                    return new Hand(Power.OnePair, cards);
+                    if (cards[0].Power == cards[1].Power)
+                    {
+                        return new Hand(Power.OnePair, cards);
+                    }
+                    else
+                    {
+                        var handCards = new List<ICard>();
+                        handCards.Add(cards[cards.Count - 1]); ////Last card is the highest since they are sorted
+                        return new Hand(Power.HighCard, handCards);
+                    }
                 }
                 else
                 {
                     var handCards = new List<ICard>();
-                    handCards.Add(cards[cards.Count - 1]); ////Last card is the highest since they are sorted
+                    handCards.Add(cards[0]);
                     return new Hand(Power.HighCard, handCards);
                 }
             }
             else
             {
-                throw new ArgumentException("The player does not have cards.");
+                throw new InvalidOperationException("The player does not have cards.");
             }
         }
 
@@ -192,22 +201,22 @@
                 cardsByPower[cards[i].Power].Add(cards[i]);
             }
 
-            var mostCardsWithSameSuit = new List<ICard>();
+            var mostCardsWithSamePower = new List<ICard>();
             foreach (var currentCards in cardsByPower)
             {
                 if (currentCards.Value.Count >= numberOfAKind)
                 {
-                    mostCardsWithSameSuit = currentCards.Value;
+                    mostCardsWithSamePower = currentCards.Value;
                 }
             }
 
-            if (mostCardsWithSameSuit.Count < numberOfAKind)
+            if (mostCardsWithSamePower.Count < numberOfAKind)
             {
                 return false;
             }
             else
             {
-                hand = mostCardsWithSameSuit.GetRange(mostCardsWithSameSuit.Count - numberOfAKind, numberOfAKind);
+                hand = mostCardsWithSamePower.GetRange(mostCardsWithSamePower.Count - numberOfAKind, numberOfAKind);
                 return true;
             }
         }

@@ -1,12 +1,11 @@
-﻿namespace Poker.Test
+﻿namespace PokerTests
 {
     using System;
-    using Cards;
-    using Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Poker.Cards;
 
     /// <summary>
-    /// Use for testing the <see cref="ICard"/> class and their properties
+    /// Use for testing the <see cref="Card"/> class and their properties
     /// </summary>
     [TestClass]
     public class CardTest
@@ -16,7 +15,7 @@
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentException), "The card power cannot be below 1")]
-        public void CreateCardWithNegativePowerThrowsException()
+        public void TestCreateCardWithNegativePowerThrowsException()
         {
             var card = new Card(null, -1, Suit.Clubs);
         }
@@ -26,7 +25,7 @@
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentException), "The card power cannot be above 14")]
-        public void CreateCardWithPowerGreaterThanAceThrowsException()
+        public void TestCreateCardWithPowerGreaterThanAceThrowsException()
         {
             var card = new Card(null, 15, Suit.Clubs);
         }

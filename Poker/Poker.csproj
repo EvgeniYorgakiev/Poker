@@ -50,6 +50,7 @@
     <Compile Include="Cards\Hands\Power.cs" />
     <Compile Include="Cards\Suit.cs" />
     <Compile Include="Factories\HandPowerFactory.cs" />
+    <Compile Include="Factories\WinningHandFactory.cs" />
     <Compile Include="Interfaces\IBot.cs" />
     <Compile Include="Interfaces\ICard.cs" />
     <Compile Include="Interfaces\IDeck.cs" />

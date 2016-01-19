@@ -1,11 +1,11 @@
-﻿namespace Poker.Test
+﻿namespace PokerTests
 {
     using System.Collections.Generic;
-    using Cards;
-    using Constants;
-    using Forms;
-    using Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Poker.Cards;
+    using Poker.Constants;
+    using Poker.Forms;
+    using Poker.Interfaces;
 
     /// <summary>
     /// Use for testing the <see cref="Deck"/> class and the methods inside of it
