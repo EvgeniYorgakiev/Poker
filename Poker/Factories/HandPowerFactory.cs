@@ -286,7 +286,7 @@
         /// The longest sequence of cards with a difference of 1
         /// </summary>
         /// <param name="cards">The cards in the hand</param>
-        /// <returns>Returns a list of cards with a difference of only 1 from each other's neighbors</returns>
+        /// <returns>Returns a List of cards with a difference of only 1 from each other's neighbors</returns>
         private static List<ICard> LongestSequenceOfCards(List<ICard> cards)
         {
             var allSequence = AllSequence(cards);
@@ -303,7 +303,7 @@
         /// <summary>
         /// Try to for forward from an Ace to Two if possible in order to find the best sequence
         /// </summary>
-        /// <param name="cards">A list of all possible cards</param>
+        /// <param name="cards">A List of all possible cards</param>
         /// <param name="longestSequence">The current longest sequence</param>
         private static void TryToGoForwardWithCarrying(List<ICard> cards, List<ICard> longestSequence)
         {
@@ -329,7 +329,7 @@
         /// <summary>
         /// Try to for backwards from Two to an Ace if possible in order to find the best sequence
         /// </summary>
-        /// <param name="cards">A list of all possible cards</param>
+        /// <param name="cards">A List of all possible cards</param>
         /// <param name="longestSequence">The current longest sequence</param>
         private static void TryToGoBackWithCarrying(List<ICard> cards, List<ICard> longestSequence)
         {
@@ -353,7 +353,7 @@
         }
 
         /// <summary>
-        /// Longest sequence of cards in a list of sequences
+        /// Longest sequence of cards in a List of sequences
         /// </summary>
         /// <param name="allSequence">All of the possible sequences of cards</param>
         /// <returns>The longest sequence of cards with a difference of 1</returns>
@@ -379,7 +379,7 @@
         /// Retrieves all possible sequences of cards with a difference of 1
         /// </summary>
         /// <param name="cards">All of the possible cards</param>
-        /// <returns>Returns a list of all sequences</returns>
+        /// <returns>Returns a List of all sequences</returns>
         private static List<List<ICard>> AllSequence(List<ICard> cards)
         {
             var allSequence = new List<List<ICard>>();

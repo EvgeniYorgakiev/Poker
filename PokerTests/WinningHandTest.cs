@@ -40,7 +40,7 @@
         /// Test if a contested win with 1 high card is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithHighCard()
+        public void Test_WinnerWithHighCard_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -74,7 +74,7 @@
             };
             this.Game.Bots[3].Fold();
             this.Game.Bots[4].Fold();
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 10, Suit.Spades),
@@ -91,14 +91,15 @@
             expectedWinners.Add(this.Game.Bots[2]);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with a high card was determined incorrectly.");
+                "Winner with a high card was determined incorrectly. Expected winner Bots 2 with hand " +
+                this.Game.Bots[2].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test multiple winners if they all have a high card
         /// </summary>
         [TestMethod]
-        public void TestMultipleWinners()
+        public void Test_MultipleWinners_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -132,7 +133,7 @@
             };
             this.Game.Bots[3].Fold();
             this.Game.Bots[4].Fold();
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 10, Suit.Spades),
@@ -149,15 +150,16 @@
             expectedWinners.Add(this.Game.Bots[0]);
             expectedWinners.Add(this.Game.Bots[1]);
             Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners), 
-                "Winner with a high card was determined incorrectly");
+                this.WinnersAreTheSame(winners, expectedWinners),
+                "Winner with a high card was determined incorrectly. Expected winner Bots 0 and Bot 1 with hand " +
+                this.Game.Bots[0].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[0].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with 1 pair is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithOnePair()
+        public void Test_WinnerWithOnePair_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -191,7 +193,7 @@
             };
             this.Game.Bots[3].Fold();
             this.Game.Bots[4].Fold();
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 10, Suit.Spades),
@@ -207,15 +209,16 @@
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
             Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners), 
-                "Winner with a one pair was determined incorrectly");
+                this.WinnersAreTheSame(winners, expectedWinners),
+                "Winner with a one pair was determined incorrectly. Expected winner Bots 2 with hand " +
+                this.Game.Bots[2].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with 2 pairs is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithTwoPairs()
+        public void Test_WinnerWithTwoPairs_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -249,7 +252,7 @@
             };
             this.Game.Bots[3].Fold();
             this.Game.Bots[4].Fold();
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 10, Suit.Spades),
@@ -265,15 +268,16 @@
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[1]);
             Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners), 
-                "Winner with two pairs was determined incorrectly");
+                this.WinnersAreTheSame(winners, expectedWinners),
+                "Winner with two pairs was determined incorrectly. Expected winner Bots 1 with hand " +
+                this.Game.Bots[1].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[1].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with 3 of a kind is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithThreeOfAKind()
+        public void Test_WinnerWithThreeOfAKind_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -307,7 +311,7 @@
             };
             this.Game.Bots[3].Fold();
             this.Game.Bots[4].Fold();
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 10, Suit.Spades),
@@ -324,14 +328,15 @@
             expectedWinners.Add(this.Game.Player);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with three of a kind was determined incorrectly");
+                "Winner with three of a kind was determined incorrectly. Expected winner Player with hand " +
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning straight at center is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithStraight()
+        public void Test_WinnerWithStraigh_With2DrawnCardsAnd5Centert()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -364,7 +369,7 @@
                 new Card(Card.Back, 14, Suit.Clubs),
             };
             this.Game.Bots[4].Fold();
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 10, Suit.Spades),
@@ -381,15 +386,16 @@
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[3]);
             Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners), 
-                "Winner with straight was determined incorrectly");
+                this.WinnersAreTheSame(winners, expectedWinners),
+                "Winner with straight was determined incorrectly. Expected winner Bots 3 with hand " +
+                this.Game.Bots[3].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[3].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning straight with carrying is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithStraightAndCarrying()
+        public void Test_WinnerWithStraightAndCarrying_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -421,7 +427,7 @@
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -439,15 +445,16 @@
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[4]);
             Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners), 
-                "Winner with straight using carrying over was determined incorrectly");
+                this.WinnersAreTheSame(winners, expectedWinners),
+                "Winner with straight using carrying over was determined incorrectly. Expected winner Bots 4 with hand " +
+                this.Game.Bots[4].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[4].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with straight at center is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithStraightAtCenter()
+        public void Test_WinnerWithStraightAtCenter_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -479,7 +486,7 @@
                 new Card(Card.Back, 11, Suit.Clubs),
                 new Card(Card.Back, 9, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -498,14 +505,15 @@
             expectedWinners.Add(this.Game.Bots[1]);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with straight at center of the table was determined incorrectly");
+                "Winner with straight at center of the table was determined incorrectly. Expected winner Bots 1 with hand " +
+                this.Game.Bots[1].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[1].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with flush is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithFlush()
+        public void Test_WinnerWithFlus_With2DrawnCardsAnd5Centerh()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -537,7 +545,7 @@
                 new Card(Card.Back, 11, Suit.Clubs),
                 new Card(Card.Back, 9, Suit.Diamonds),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -556,14 +564,15 @@
             expectedWinners.Add(this.Game.Player);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with flush was determined incorrectly");
+                "Winner with flush was determined incorrectly. Expected winner Player with hand " +
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with full house is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithFullHouse()
+        public void Test_WinnerWithFullHouse_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -595,7 +604,7 @@
                 new Card(Card.Back, 11, Suit.Clubs),
                 new Card(Card.Back, 9, Suit.Diamonds),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -614,14 +623,15 @@
             expectedWinners.Add(this.Game.Bots[0]);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with full house was determined incorrectly");
+                "Winner with full house was determined incorrectly. Expected winner Bot 0 with hand " +
+                this.Game.Bots[0].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[0].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with four of a kind is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithFourOfAKind()
+        public void Test_WinnerWithFourOfAKind_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -653,7 +663,7 @@
                 new Card(Card.Back, 11, Suit.Clubs),
                 new Card(Card.Back, 9, Suit.Diamonds),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -672,14 +682,15 @@
             expectedWinners.Add(this.Game.Bots[2]);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with four of a kind was determined incorrectly");
+                "Winner with four of a kind was determined incorrectly. Expected winner Bot 2 with hand " +
+                this.Game.Bots[2].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with straight flush is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithStraightFlush()
+        public void Test_WinnerWithStraightFlush_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -711,7 +722,7 @@
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 3, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -730,14 +741,15 @@
             expectedWinners.Add(this.Game.Bots[4]);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with straight flush was determined incorrectly");
+                "Winner with straight flush was determined incorrectly. Expected winner Bot 4 with hand " +
+                this.Game.Bots[4].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[4].CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with royal flush is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithRoyalFlush()
+        public void Test_WinnerWithRoyalFlush_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -769,7 +781,7 @@
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 3, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -788,14 +800,15 @@
             expectedWinners.Add(this.Game.Player);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with royal flush was determined incorrectly");
+                "Winner with royal flush was determined incorrectly. Expected winner Player with hand " +
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
         }
 
         /// <summary>
         /// Test if a winning with multiple royal flush is correct
         /// </summary>
         [TestMethod]
-        public void TestWinnerWithMultipleRoyalFlush()
+        public void Test_WinnerWithMultipleRoyalFlush_With2DrawnCardsAnd5Center()
         {
             this.Game.Player.Cards = new List<ICard>
             {
@@ -827,7 +840,7 @@
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 3, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            this.Game.Deck.NeutalCards = new ICard[]
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Spades),
@@ -847,7 +860,8 @@
             expectedWinners.Add(this.Game.Bots[0]);
             Assert.IsTrue(
                 this.WinnersAreTheSame(winners, expectedWinners),
-                "Winner with multiple royal flush was determined incorrectly");
+                "Winner with multiple royal flush was determined incorrectly. Expected winners Player and Bot 1 with hand " +
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
         }
 
         /// <summary>

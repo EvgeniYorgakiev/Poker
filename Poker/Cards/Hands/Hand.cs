@@ -15,7 +15,7 @@
         /// Initializes a new instance of the <see cref="Hand"/> class
         /// </summary>
         /// <param name="handPower">The <see cref="Power"/> of the hand</param>
-        /// <param name="cards">The list of cards that make up the current hand</param>
+        /// <param name="cards">The List of cards that make up the current hand</param>
         public Hand(Power handPower, List<ICard> cards)
         {
             this.HandPower = handPower;

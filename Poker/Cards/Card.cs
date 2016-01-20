@@ -150,6 +150,43 @@
             return this.Power.CompareTo(other.Power);
         }
 
+        public override string ToString()
+        {
+            string powerAsString;
+            switch (this.Power)
+            {
+                case 11:
+                {
+                    powerAsString = "Jack";
+                    break;;
+                    }
+                case 12:
+                    {
+                        powerAsString = "Queen";
+                        break; ;
+                    }
+                case 13:
+                    {
+                        powerAsString = "King";
+                        break; ;
+                    }
+                case 14:
+                    {
+                        powerAsString = "Ace";
+                        break; ;
+                    }
+                default:
+                    {
+                        powerAsString = this.Power.ToString();
+                        break; ;
+                    }
+            }
+
+            var cardAsString = string.Format("{0} of {1}", powerAsString, this.Suit);
+
+            return base.ToString();
+        }
+
         /// <summary>
         /// Retrieves the back of the card
         /// </summary>

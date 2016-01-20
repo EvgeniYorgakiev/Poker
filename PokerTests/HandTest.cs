@@ -42,7 +42,7 @@
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException), "The player must have atleast 1 card before determining his hand power")]
-        public void TestWith0Cards()
+        public void Test_DetermineHandPower_With0Cards()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>();
@@ -54,7 +54,7 @@
         /// Test if it will throw an exception with 0 cards
         /// </summary>
         [TestMethod]
-        public void TestWith1Card()
+        public void Test_DetermineHandPower_With1Card()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>()
@@ -66,14 +66,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.HighCard &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, this.Game.Player.Cards),
-                "The required flush was not found when it existed");
+                "The required flush was not found when it existed. Expected: " + string.Join(" ", this.Game.Player.Cards));
         }
 
         /// <summary>
         /// Test if finding a flush works
         /// </summary>
         [TestMethod]
-        public void TestFindingFlush()
+        public void Test_FindingFlush_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -101,14 +101,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Flush &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required flush was not found when it existed");
+                "The required flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a straight works
         /// </summary>
         [TestMethod]
-        public void TestFindingStraight()
+        public void Test_FindingStraigh_With2DrawnCardsAnd5Centert()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -136,14 +136,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed");
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a straight with carrying backwards works
         /// </summary>
         [TestMethod]
-        public void TestFindingStraightWithCarryingBackwards()
+        public void Test_FindingStraightWithCarryingBackwards_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -171,14 +171,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed");
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
         
         /// <summary>
         /// Test if finding a straight with carrying forward works
         /// </summary>
         [TestMethod]
-        public void TestFindingStraightWithCarryingForward()
+        public void Test_FindingStraightWithCarryingForward_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -206,14 +206,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed");
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a straight flush works
         /// </summary>
         [TestMethod]
-        public void TestFindingStraightFlush()
+        public void Test_FindingStraightFlush_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -241,14 +241,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.StraightFlush &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight flush was not found when it existed");
+                "The required straight flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a royal flush works
         /// </summary>
         [TestMethod]
-        public void TestFindingRoyalFlush()
+        public void Test_FindingRoyalFlush_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -276,14 +276,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.RoyalFlush &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required royal flush was not found when it existed");
+                "The required royal flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a four of a kind works
         /// </summary>
         [TestMethod]
-        public void TestFindingFourOfAKind()
+        public void Test_FindingFourOfAKind_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -310,14 +310,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.FourOfAKind &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required four of a kind was not found when it existed");
+                "The required four of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a three of a kind works
         /// </summary>
         [TestMethod]
-        public void TestFindingThreeOfAKind()
+        public void Test_FindingThreeOfAKind_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -343,14 +343,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.ThreeOfAKind &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required two of a kind  was not found when it existed");
+                "The required two of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a full house works
         /// </summary>
         [TestMethod]
-        public void TestFindingFullHouse()
+        public void Test_FindingFullHouse_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -378,14 +378,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.FullHouse &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required full house were not found when they existed");
+                "The required full house was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding two pairs works
         /// </summary>
         [TestMethod]
-        public void TestFindingTwoPairs()
+        public void Test_FindingTwoPairs_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -412,14 +412,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.TwoPair &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required two pairs were not found when they existed");
+                "The required two pairs were not found when they existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a two of a kind works
         /// </summary>
         [TestMethod]
-        public void TestFindingOnePair()
+        public void Test_FindingOnePair_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -444,14 +444,14 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.OnePair &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required one pair was not found when it existed");
+                "The required one pair was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
         /// Test if finding a high card works
         /// </summary>
         [TestMethod]
-        public void TestFindingHighCard()
+        public void Test_FindingHighCard_With2DrawnCardsAnd5Center()
         {
             this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
             this.Game.Player.Cards = new List<ICard>
@@ -475,7 +475,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.HighCard &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required high card was not found when it existed");
+                "The required high card was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
