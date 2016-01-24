@@ -101,7 +101,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Flush &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -136,7 +136,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -171,7 +171,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
         
         /// <summary>
@@ -206,7 +206,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -241,7 +241,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.StraightFlush &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required straight flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -276,7 +276,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.RoyalFlush &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required royal flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required royal flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -310,7 +310,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.FourOfAKind &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required four of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required four of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -343,7 +343,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.ThreeOfAKind &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required two of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required two of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -378,7 +378,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.FullHouse &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required full house was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required full house was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -412,7 +412,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.TwoPair &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required two pairs were not found when they existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required two pairs were not found when they existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -444,7 +444,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.OnePair &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required one pair was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required one pair was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -475,7 +475,7 @@
             Assert.IsTrue(
                 this.Game.Player.CurrentHand.HandPower == Power.HighCard &&
                 this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required high card was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " +string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                "The required high card was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>

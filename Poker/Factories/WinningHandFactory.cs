@@ -56,12 +56,30 @@
 
             if (winnersInTie.Count != 1)
             {
-                BreakTieWithMaxCardInHand(winnersInTie);
+                if (cardIndex == winnersWithSameHand[0].CurrentHand.Cards.Count - 1 &&
+                    0 != winnersWithSameHand[0].CurrentHand.Cards.Count - 1)
+                {
+                    winnersInTie.Clear();
+                    BreakTieUsingCardIndex(winnersWithSameHand, winnersInTie, 0);
+                }
+                else
+                {
+                    BreakTieWithMaxCardInHand(winnersInTie);
+                }
             }
 
             if (winnersInTie.Count != 1)
             {
-                BreakTieWithMinCardInHand(winnersInTie);
+                if (cardIndex == winnersWithSameHand[0].CurrentHand.Cards.Count - 1 &&
+                    0 != winnersWithSameHand[0].CurrentHand.Cards.Count - 1)
+                {
+                    winnersInTie.Clear();
+                    BreakTieUsingCardIndex(winnersWithSameHand, winnersInTie, 0);
+                }
+                else
+                {
+                    BreakTieWithMinCardInHand(winnersInTie);
+                }
             }
         }
 

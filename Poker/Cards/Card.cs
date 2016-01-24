@@ -156,35 +156,39 @@
             switch (this.Power)
             {
                 case 11:
-                {
-                    powerAsString = "Jack";
-                    break;;
+                    {
+                        powerAsString = "Jack";
+                        break;
                     }
+
                 case 12:
                     {
                         powerAsString = "Queen";
-                        break; ;
+                        break;
                     }
+
                 case 13:
                     {
                         powerAsString = "King";
-                        break; ;
+                        break;
                     }
+
                 case 14:
                     {
                         powerAsString = "Ace";
-                        break; ;
+                        break;
                     }
+
                 default:
                     {
                         powerAsString = this.Power.ToString();
-                        break; ;
+                        break;
                     }
             }
 
             var cardAsString = string.Format("{0} of {1}", powerAsString, this.Suit);
 
-            return base.ToString();
+            return cardAsString;
         }
 
         /// <summary>

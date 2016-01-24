@@ -12,10 +12,6 @@
         public const int DefaultNumberInsteadOfRandom = -100;
 
         ////Decisions numbers
-        public const int MaximumValueToDecideToFold = -2;
-        public const int MaximumValueToDecideToCall = 3;
-        public const int MaximumValueToDecideToRaiseWithSmallSum = 8;
-        public const int SmallSumRaisePercentage = 5;
-        public const int BigSumRaisePercentage = 10;
+        public const int MaximumValueToDecideToFold = 3;
     }
 }

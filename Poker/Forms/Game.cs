@@ -336,6 +336,10 @@
         public void CallForPlayer(IPlayer currentPlayer)
         {
             int differenceInCall = this.Call - currentPlayer.CurrentCall;
+            if (currentPlayer.Chips - differenceInCall < 0)
+            {
+                differenceInCall = currentPlayer.Chips;
+            }
             this.potTextbox.Text = (int.Parse(this.potTextbox.Text) + differenceInCall).ToString();
             currentPlayer.Chips -= differenceInCall;
             currentPlayer.CurrentCall = this.Call;
@@ -405,6 +409,8 @@
 
             this.FixCall();
             this.potTextbox.Text = PotDefaultMoney;
+
+            this.Deck.ThrowCards(this.Player, this.Bots);
         }
 
         /// <summary>
@@ -571,6 +577,7 @@
                 this.EnableButtons(true, false, true, true);
             }
 
+            this.FixCall();
             this.EndTurn();
         }
 
@@ -604,6 +611,8 @@
                 }
                 else
                 {
+                    this.Player.DetermineHandPower(this.Deck.NeutalCards);
+
                     var winnersInTie = this.DetermineWinner();
 
                     this.RevealCards();
@@ -615,7 +624,7 @@
 
                 for (int i = 0; i < this.Bots.Count; i++)
                 {
-                    this.Bots[i].RaisedThisTurn = false;
+                    this.Bots[i].ActedThisTurn = false;
                 }
             }
         }

@@ -12,10 +12,13 @@
     /// </summary>
     public class Bot : Player, IBot
     {
-        private const int MinimumNumberDifference = 4;
-        private const int MaximumNumberDifference = 4;
+        private const int MoneyBettingFactor = 3;
+        private const int MinimumNumberDifference = -5;
+        private const int MaximumNumberDifference = 15;
+        private const decimal FactorForRaising = 1.3m;
+        private const decimal FactorForCalling = 1.1m;
 
-        private bool raisedThisTurn;
+        private bool actedThisTurn;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bot"/> class
@@ -28,22 +31,22 @@
         public Bot(Point cardStartingPoint, Point cardDistanceFromEachother, int chips, Label status, TextBox chipsTextBox) 
             : base(cardStartingPoint, cardDistanceFromEachother, chips, status, chipsTextBox)
         {
-            this.RaisedThisTurn = false;
+            this.ActedThisTurn = false;
         }
 
         /// <summary>
         /// Used to determine if the bot has already raised this turn so as not to fall in infinite loop of raising
         /// </summary>
-        public bool RaisedThisTurn
+        public bool ActedThisTurn
         {
             get
             {
-                return this.raisedThisTurn;
+                return this.actedThisTurn;
             }
 
             set
             {
-                this.raisedThisTurn = value;
+                this.actedThisTurn = value;
             }
         }
 
@@ -71,12 +74,14 @@
             if (numberInsteadOfRandom == GlobalConstants.DefaultNumberInsteadOfRandom)
             {
                 Random random = new Random();
-                randomBehaviourNumber = random.Next(
-                    (int)this.CurrentHand.HandPower - MinimumNumberDifference,
-                    (int)this.CurrentHand.HandPower + MaximumNumberDifference);
+                randomBehaviourNumber = random.Next(MinimumNumberDifference, MaximumNumberDifference);
+                randomBehaviourNumber += (int)this.CurrentHand.HandPower;
+                randomBehaviourNumber += this.CurrentHand.Cards[0].Power;
             }
 
             this.TakeTurnBasedOnDecision(randomBehaviourNumber);
+
+            this.ActedThisTurn = true;
 
             Game.Instance.FixCall();
         }
@@ -91,50 +96,92 @@
             {
                 this.Fold();
             }
-            else if (randomBehaviourNumber < GlobalConstants.MaximumValueToDecideToCall)
+            else
+            {
+                bool cardsInCenterAreRevealed = Game.Instance.Deck.NeutalCards[0].PictureBox.Image ==
+                                                 Game.Instance.Deck.NeutalCards[0].Front;
+                int moneyWillingToBet = (int)(this.Chips / (100m / randomBehaviourNumber)) / MoneyBettingFactor;
+                moneyWillingToBet = this.RoundMoneyToZero(moneyWillingToBet);
+                int moneyToBet = moneyWillingToBet;
+                if (moneyToBet < this.MinimumMoneyRequiredForBlind())
+                {
+                    moneyToBet = this.MinimumMoneyRequiredForBlind();
+                }
+
+                if (moneyToBet > this.Chips)
+                {
+                    moneyToBet = this.Chips;
+                }
+
+                this.TryToCall(cardsInCenterAreRevealed, moneyWillingToBet, moneyToBet);
+            }
+        }
+
+        /// <summary>
+        /// The bot will try to determine if he should call or fold depending on the factors
+        /// </summary>
+        /// <param name="cardsInCenterAreRevealed">If there aren't any cards revealed in the center and yet someone placed a high raise there was a bluff.</param>
+        /// <param name="moneyWillingToBet">The money the bot is willing to bet.</param>
+        /// <param name="moneyToBet">The money the bot will bet.</param>
+        private void TryToCall(bool cardsInCenterAreRevealed, int moneyWillingToBet, int moneyToBet)
+        {
+            int moneyNeededForCall = Game.Instance.Call - this.CurrentCall;
+            if (moneyWillingToBet > moneyNeededForCall * FactorForRaising && !this.ActedThisTurn)
+            {
+                this.Raise(moneyToBet);
+                return;
+            }
+            else if (moneyWillingToBet > moneyNeededForCall / FactorForCalling)
             {
                 this.CallBlind();
-                this.RaisedThisTurn = false;
+                return;
             }
-            else if (!this.RaisedThisTurn)
+            else if (cardsInCenterAreRevealed)
             {
-                decimal raiseValue = 0;
-                if (randomBehaviourNumber < GlobalConstants.MaximumValueToDecideToRaiseWithSmallSum)
+                this.Fold();
+            }
+            if (!cardsInCenterAreRevealed)
+            {
+                Random random = new Random();
+                int randomBehaviour = random.Next(0, 2);
+                if (randomBehaviour == 0)
                 {
-                    raiseValue = GlobalConstants.SmallSumRaisePercentage / 100m;
+                    this.Fold();
                 }
                 else
                 {
-                    raiseValue = GlobalConstants.BigSumRaisePercentage / 100m;
+                    this.CallBlind(); ////If someone has raised with a lot of money in this scenario there is a strong possibility of a bluff so the bot will call the blind.
                 }
-
-                this.Raise((int)(this.Chips * raiseValue));
-                this.RaisedThisTurn = true;
             }
         }
 
         /// <summary>
-        /// The bot raises the bet
+        /// Using the current blind options finds the minimum required to raise.
         /// </summary>
-        /// <param name="raiseValue">The value that will be used for raising</param>
-        private void Raise(int raiseValue)
+        /// <returns>The minimum money required for a blind</returns>
+        private int MinimumMoneyRequiredForBlind()
         {
-            this.CallBlind();
-            int value = raiseValue;
-            if (value > this.Chips)
+            if (Game.Instance.IsUsingBigBlind)
             {
-                value = this.Chips;
+                return Game.Instance.CurrentBigBlind;
             }
-
-            Game.Instance.RaiseBet(this, value);
+            else
+            {
+                return Game.Instance.CurrentSmallBlind;
+            }
         }
 
         /// <summary>
-        /// The bot calls the blind and bets money
+        /// Rounds the last digit do 0 to avoid bets like 387.
         /// </summary>
-        private void CallBlind()
+        /// <param name="moneyWillingToBet">The money the bot is willing to bet.</param>
+        /// <returns>Returns the money with the last digit rounded to 0.</returns>
+        private int RoundMoneyToZero(int moneyWillingToBet)
         {
-            Game.Instance.CallForPlayer(this);
+            moneyWillingToBet /= 10;
+            moneyWillingToBet *= 10;
+
+            return moneyWillingToBet;
         }
     }
 }

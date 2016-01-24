@@ -89,10 +89,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with a high card was determined incorrectly. Expected winner Bots 2 with hand " +
-                this.Game.Bots[2].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards");
+                this.Game.Bots[2].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -149,10 +150,11 @@
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[0]);
             expectedWinners.Add(this.Game.Bots[1]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultsText =
                 "Winner with a high card was determined incorrectly. Expected winner Bots 0 and Bot 1 with hand " +
-                this.Game.Bots[0].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[0].CurrentHand.Cards) + "cards");
+                this.Game.Bots[0].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[0].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultsText);
         }
 
         /// <summary>
@@ -208,10 +210,130 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with a one pair was determined incorrectly. Expected winner Bots 2 with hand " +
-                this.Game.Bots[2].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards");
+                this.Game.Bots[2].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
+        }
+        /// <summary>
+        /// Test if a winning with 2 pairs is correct when 2 people have the same higher pair
+        /// </summary>
+        [TestMethod]
+        public void Test_ConstestedWinnerWithOnePair_With2DrawnCardsAnd5Center()
+        {
+            this.Game.Player.Cards = new List<ICard>
+            {
+                new Card(Card.Back, 5, Suit.Clubs),
+                new Card(Card.Back, 14, Suit.Clubs),
+            };
+            this.Game.Bots[0].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 5, Suit.Clubs),
+                new Card(Card.Back, 10, Suit.Clubs),
+            };
+            this.Game.Bots[1].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 6, Suit.Clubs),
+                new Card(Card.Back, 4, Suit.Clubs),
+            };
+            this.Game.Bots[2].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 5, Suit.Clubs),
+                new Card(Card.Back, 5, Suit.Clubs),
+            };
+            this.Game.Bots[3].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 10, Suit.Clubs),
+                new Card(Card.Back, 12, Suit.Clubs),
+            };
+            this.Game.Bots[4].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 13, Suit.Clubs),
+                new Card(Card.Back, 14, Suit.Clubs),
+            };
+            this.Game.Bots[0].Fold();
+            this.Game.Bots[1].Fold();
+            this.Game.Bots[2].Fold();
+            this.Game.Bots[4].Fold();
+            this.Game.Deck.NeutalCards = new ICard[]
+            {
+                new Card(Card.Back, 4, Suit.Diamonds),
+                new Card(Card.Back, 6, Suit.Spades),
+                new Card(Card.Back, 11, Suit.Hearts),
+                new Card(Card.Back, 9, Suit.Hearts),
+                new Card(Card.Back, 11, Suit.Clubs),
+            };
+            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
+            var winners = this.Game.DetermineWinner();
+            var expectedWinners = new List<IPlayer>();
+            expectedWinners.Add(this.Game.Player);
+            string expectedResultText =
+                "Winner with two pairs was determined incorrectly. Expected winner Player with hand " +
+                this.Game.Player.CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
+        }
+
+        /// <summary>
+        /// Test if a winning with 2 pairs is correct when 2 people have the same higher pair
+        /// </summary>
+        [TestMethod]
+        public void Test_ConstestedWinnerWithTwoPairs_With2DrawnCardsAnd5Center()
+        {
+            this.Game.Player.Cards = new List<ICard>
+            {
+                new Card(Card.Back, 13, Suit.Clubs),
+                new Card(Card.Back, 13, Suit.Clubs),
+            };
+            this.Game.Bots[0].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 7, Suit.Clubs),
+                new Card(Card.Back, 7, Suit.Clubs),
+            };
+            this.Game.Bots[1].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 6, Suit.Clubs),
+                new Card(Card.Back, 4, Suit.Clubs),
+            };
+            this.Game.Bots[2].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 5, Suit.Clubs),
+                new Card(Card.Back, 5, Suit.Clubs),
+            };
+            this.Game.Bots[3].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 13, Suit.Clubs),
+                new Card(Card.Back, 14, Suit.Clubs),
+            };
+            this.Game.Bots[4].Cards = new List<ICard>
+            {
+                new Card(Card.Back, 13, Suit.Clubs),
+                new Card(Card.Back, 14, Suit.Clubs),
+            };
+            this.Game.Bots[1].Fold();
+            this.Game.Bots[2].Fold();
+            this.Game.Bots[3].Fold();
+            this.Game.Bots[4].Fold();
+            this.Game.Deck.NeutalCards = new ICard[]
+            {
+                new Card(Card.Back, 3, Suit.Diamonds),
+                new Card(Card.Back, 3, Suit.Spades),
+                new Card(Card.Back, 14, Suit.Hearts),
+                new Card(Card.Back, 5, Suit.Hearts),
+                new Card(Card.Back, 8, Suit.Clubs),
+            };
+            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
+            var winners = this.Game.DetermineWinner();
+            var expectedWinners = new List<IPlayer>();
+            expectedWinners.Add(this.Game.Player);
+            string expectedResultText =
+                "Winner with two pairs was determined incorrectly. Expected winner Player with hand " +
+                this.Game.Player.CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -267,10 +389,12 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[1]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with two pairs was determined incorrectly. Expected winner Bots 1 with hand " +
-                this.Game.Bots[1].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[1].CurrentHand.Cards) + "cards");
+                this.Game.Bots[1].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[1].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(
+                this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -326,10 +450,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with three of a kind was determined incorrectly. Expected winner Player with hand " +
-                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) +
+                "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -385,10 +510,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[3]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with straight was determined incorrectly. Expected winner Bots 3 with hand " +
-                this.Game.Bots[3].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[3].CurrentHand.Cards) + "cards");
+                this.Game.Bots[3].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[3].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -444,10 +570,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[4]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with straight using carrying over was determined incorrectly. Expected winner Bots 4 with hand " +
-                this.Game.Bots[4].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[4].CurrentHand.Cards) + "cards");
+                this.Game.Bots[4].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[4].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -503,10 +630,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[1]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with straight at center of the table was determined incorrectly. Expected winner Bots 1 with hand " +
-                this.Game.Bots[1].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[1].CurrentHand.Cards) + "cards");
+                this.Game.Bots[1].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[1].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -562,10 +690,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with flush was determined incorrectly. Expected winner Player with hand " +
-                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) +
+                "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -621,10 +750,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[0]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with full house was determined incorrectly. Expected winner Bot 0 with hand " +
-                this.Game.Bots[0].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[0].CurrentHand.Cards) + "cards");
+                this.Game.Bots[0].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[0].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -680,10 +810,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with four of a kind was determined incorrectly. Expected winner Bot 2 with hand " +
-                this.Game.Bots[2].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards");
+                this.Game.Bots[2].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -739,10 +870,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[4]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with straight flush was determined incorrectly. Expected winner Bot 4 with hand " +
-                this.Game.Bots[4].CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Bots[4].CurrentHand.Cards) + "cards");
+                this.Game.Bots[4].CurrentHand.HandPower + " and " +
+                string.Join(" ", this.Game.Bots[4].CurrentHand.Cards) + "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -798,10 +930,11 @@
             var winners = this.Game.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with royal flush was determined incorrectly. Expected winner Player with hand " +
-                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) +
+                "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>
@@ -858,10 +991,11 @@
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             expectedWinners.Add(this.Game.Bots[0]);
-            Assert.IsTrue(
-                this.WinnersAreTheSame(winners, expectedWinners),
+            string expectedResultText =
                 "Winner with multiple royal flush was determined incorrectly. Expected winners Player and Bot 1 with hand " +
-                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) + "cards");
+                this.Game.Player.CurrentHand.HandPower + " and " + string.Join(" ", this.Game.Player.CurrentHand.Cards) +
+                "cards";
+            Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
 
         /// <summary>

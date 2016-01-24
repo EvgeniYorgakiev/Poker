@@ -7,7 +7,7 @@
         /// <summary>
         /// Used to determine if the bot has raised this turn so as not to fall in an infinite loop
         /// </summary>
-        bool RaisedThisTurn { get; set; }
+        bool ActedThisTurn { get; set; }
 
         /// <summary>
         /// The bot's AI logic for every turn

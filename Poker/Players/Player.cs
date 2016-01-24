@@ -5,6 +5,7 @@
     using System.Windows.Forms;
     using Cards.Hands;
     using Factories;
+    using Forms;
     using Interfaces;
 
     /// <summary>
@@ -221,6 +222,30 @@
             }
 
             this.CurrentHand = HandPowerFactory.StrongestHand(knownCards);
+        }
+
+        /// <summary>
+        /// The bot raises the bet
+        /// </summary>
+        /// <param name="raiseValue">The value that will be used for raising</param>
+        public void Raise(int raiseValue)
+        {
+            this.CallBlind();
+            int value = raiseValue;
+            if (value > this.Chips)
+            {
+                value = this.Chips;
+            }
+
+            Game.Instance.RaiseBet(this, value);
+        }
+
+        /// <summary>
+        /// The bot calls the blind and bets money
+        /// </summary>
+        protected void CallBlind()
+        {
+            Game.Instance.CallForPlayer(this);
         }
     }
 }

@@ -35,6 +35,14 @@
             [TestMethod]
             public void TestFoldForBot()
             {
+                this.Game.Deck.NeutalCards = new[]
+                {
+                    new Card(Card.Back, 3, Suit.Diamonds),
+                    new Card(Card.Back, 5, Suit.Spades),
+                    new Card(Card.Back, 6, Suit.Clubs),
+                    new Card(Card.Back, 10, Suit.Hearts),
+                    new Card(Card.Back, 14, Suit.Clubs),
+                };
                 this.Game.Bots[0].CurrentCall = 0;
                 this.Game.Call = 500;
                 this.Game.Bots[0].TakeTurn(0, GlobalConstants.MaximumValueToDecideToFold - 1);
@@ -47,9 +55,18 @@
             [TestMethod]
             public void TestCallForBot()
             {
+                this.Game.Deck.NeutalCards = new[]
+                {
+                    new Card(Card.Back, 3, Suit.Diamonds),
+                    new Card(Card.Back, 5, Suit.Spades),
+                    new Card(Card.Back, 6, Suit.Clubs),
+                    new Card(Card.Back, 10, Suit.Hearts),
+                    new Card(Card.Back, 14, Suit.Clubs),
+                };
                 this.Game.Bots[0].CurrentCall = 0;
+                this.Game.Bots[0].Chips = 10000;
                 this.Game.Call = 500;
-                this.Game.Bots[0].TakeTurn(0, GlobalConstants.MaximumValueToDecideToCall - 1);
+                this.Game.Bots[0].TakeTurn(0, 14);
                 Assert.AreEqual(this.Game.Bots[0].CurrentCall, this.Game.Call, "The bot did not call when his behaviour requested it");
             }
 
@@ -59,34 +76,24 @@
             [TestMethod]
             public void TestRaiseWithSmallPercentageForBot()
             {
+                this.Game.Deck.NeutalCards = new[]
+                {
+                    new Card(Card.Back, 3, Suit.Diamonds),
+                    new Card(Card.Back, 5, Suit.Spades),
+                    new Card(Card.Back, 6, Suit.Clubs),
+                    new Card(Card.Back, 10, Suit.Hearts),
+                    new Card(Card.Back, 14, Suit.Clubs),
+                };
                 this.Game.Bots[0].CurrentCall = 0;
-                decimal raiseValue = GlobalConstants.SmallSumRaisePercentage / 100m;
-                int supposedRaise = (int)(this.Game.Bots[0].Chips * raiseValue);
+                this.Game.Bots[0].Chips = 10000;
+                int supposedRaise = 1000;
                 int startingCall = 500;
                 this.Game.Call = startingCall;
-                this.Game.Bots[0].TakeTurn(0, GlobalConstants.MaximumValueToDecideToRaiseWithSmallSum - 1);
-                Assert.AreEqual(
-                    this.Game.Bots[0].CurrentCall - startingCall, 
-                    supposedRaise,
-                    "The bot did not raise with a small value when his behaviour requested it");
-            }
-
-            /// <summary>
-            /// Test if the bot will raise with 10% of his chips when he should
-            /// </summary>
-            [TestMethod]
-            public void TestRaiseWithBigPercentageForBot()
-            {
-                this.Game.Bots[0].CurrentCall = 0;
-                decimal raiseValue = GlobalConstants.BigSumRaisePercentage / 100m;
-                int supposedRaise = (int)(this.Game.Bots[0].Chips * raiseValue);
-                int startingCall = 500;
-                this.Game.Call = startingCall;
-                this.Game.Bots[0].TakeTurn(0, GlobalConstants.MaximumValueToDecideToFold + 1);
+                this.Game.Bots[0].TakeTurn(0, 30);
                 Assert.AreEqual(
                     this.Game.Bots[0].CurrentCall - startingCall,
                     supposedRaise,
-                    "The bot did not raise with a big value when his behaviour requested it");
+                    "The bot did not raise with a small value when his behaviour requested it");
             }
         }
     }
