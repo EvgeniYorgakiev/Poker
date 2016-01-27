@@ -12,7 +12,7 @@
         private Button checkButton;
         private Button callButton;
         private Button raiseButton;
-        private ProgressBar timerTextbox;
+        private ProgressBar timerProgressBar;
         private TextBox playerTextboxChips;
         private Button addChipsButton;
         private TextBox addChipsTextBox;
@@ -67,7 +67,7 @@
             this.checkButton = new System.Windows.Forms.Button();
             this.callButton = new System.Windows.Forms.Button();
             this.raiseButton = new System.Windows.Forms.Button();
-            this.timerTextbox = new System.Windows.Forms.ProgressBar();
+            this.timerProgressBar = new System.Windows.Forms.ProgressBar();
             this.playerTextboxChips = new System.Windows.Forms.TextBox();
             this.addChipsButton = new System.Windows.Forms.Button();
             this.addChipsTextBox = new System.Windows.Forms.TextBox();
@@ -140,16 +140,16 @@
             this.raiseButton.UseVisualStyleBackColor = true;
             this.raiseButton.Click += new System.EventHandler(this.OnRaise);
             // 
-            // timerTextbox
+            // timerProgressBar
             // 
-            this.timerTextbox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.timerTextbox.BackColor = System.Drawing.SystemColors.Control;
-            this.timerTextbox.Location = new System.Drawing.Point(335, 631);
-            this.timerTextbox.Maximum = 1000;
-            this.timerTextbox.Name = "timerTextbox";
-            this.timerTextbox.Size = new System.Drawing.Size(667, 23);
-            this.timerTextbox.TabIndex = 5;
-            this.timerTextbox.Value = 1000;
+            this.timerProgressBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.timerProgressBar.BackColor = System.Drawing.SystemColors.Control;
+            this.timerProgressBar.Location = new System.Drawing.Point(335, 631);
+            this.timerProgressBar.Maximum = 1000;
+            this.timerProgressBar.Name = "timerProgressBar";
+            this.timerProgressBar.Size = new System.Drawing.Size(667, 23);
+            this.timerProgressBar.TabIndex = 5;
+            this.timerProgressBar.Value = 1000;
             // 
             // playerTextboxChips
             // 
@@ -171,6 +171,7 @@
             this.addChipsButton.TabIndex = 7;
             this.addChipsButton.Text = "AddChips";
             this.addChipsButton.UseVisualStyleBackColor = true;
+            this.addChipsButton.Click += new System.EventHandler(this.OnAddChips);
             // 
             // addChipsTextBox
             // 
@@ -360,6 +361,7 @@
             this.raiseTextBox.Name = "raiseTextBox";
             this.raiseTextBox.Size = new System.Drawing.Size(108, 20);
             this.raiseTextBox.TabIndex = 0;
+            this.raiseTextBox.TextChanged += new System.EventHandler(this.OnRaiseTextChange);
             // 
             // Game
             // 
@@ -390,7 +392,7 @@
             this.Controls.Add(this.addChipsTextBox);
             this.Controls.Add(this.addChipsButton);
             this.Controls.Add(this.playerTextboxChips);
-            this.Controls.Add(this.timerTextbox);
+            this.Controls.Add(this.timerProgressBar);
             this.Controls.Add(this.raiseButton);
             this.Controls.Add(this.callButton);
             this.Controls.Add(this.checkButton);

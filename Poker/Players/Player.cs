@@ -4,6 +4,7 @@
     using System.Drawing;
     using System.Windows.Forms;
     using Cards.Hands;
+    using Constants;
     using Factories;
     using Forms;
     using Interfaces;
@@ -14,6 +15,9 @@
     public abstract class Player : IPlayer
     {
         private const string ChipsText = "Chips: ";
+        private const string FoldedText = "Folded";
+        private const string CalledText = "Called ";
+        private const string CheckedText = "Checked";
 
         private List<ICard> cards;
         private Point cardStartingPoint;
@@ -199,6 +203,8 @@
             {
                 this.Cards[i].PictureBox.Visible = false;
             }
+
+            this.Status.Text = FoldedText;
         }
 
         /// <summary>
@@ -230,22 +236,39 @@
         /// <param name="raiseValue">The value that will be used for raising</param>
         public void Raise(int raiseValue)
         {
-            this.CallBlind();
-            int value = raiseValue;
+            if (raiseValue == 0)
+            {
+                this.Status.Text = CheckedText;
+                return;
+            }
+
+            int chipsBeforeCall = this.Chips;
+            Game.Instance.CallForPlayer(this);
+            int value = raiseValue - (chipsBeforeCall - this.Chips);
             if (value > this.Chips)
             {
                 value = this.Chips;
             }
 
             Game.Instance.RaiseBet(this, value);
+            this.Status.Text = GlobalConstants.RaiseText + " " + raiseValue;
         }
 
         /// <summary>
         /// The bot calls the blind and bets money
         /// </summary>
-        protected void CallBlind()
+        public void CallBlind()
         {
+            int callValue = Game.Instance.Call - this.CurrentCall;
             Game.Instance.CallForPlayer(this);
+            if (callValue == 0)
+            {
+                this.Status.Text = CheckedText;
+            }
+            else
+            {
+                this.Status.Text = CalledText + callValue;
+            }
         }
     }
 }

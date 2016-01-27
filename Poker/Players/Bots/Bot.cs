@@ -12,11 +12,10 @@
     /// </summary>
     public class Bot : Player, IBot
     {
-        private const int MoneyBettingFactor = 3;
+        private const int MoneyBettingFactor = 2;
         private const int MinimumNumberDifference = -5;
         private const int MaximumNumberDifference = 15;
-        private const decimal FactorForRaising = 1.3m;
-        private const decimal FactorForCalling = 1.1m;
+        private const decimal FactorForCalling = 1.5m;
 
         private bool actedThisTurn;
 
@@ -57,7 +56,7 @@
         /// <param name="numberInsteadOfRandom">Used for specific testing instead of a random number</param>
         public void TakeTurn(int botIndex, int numberInsteadOfRandom = GlobalConstants.DefaultNumberInsteadOfRandom)
         {
-            if (this.HasFolded)
+            if (this.HasFolded || this.Chips <= 0)
             {
                 return;
             }
@@ -126,7 +125,8 @@
         private void TryToCall(bool cardsInCenterAreRevealed, int moneyWillingToBet, int moneyToBet)
         {
             int moneyNeededForCall = Game.Instance.Call - this.CurrentCall;
-            if (moneyWillingToBet > moneyNeededForCall * FactorForRaising && !this.ActedThisTurn)
+            decimal moneyNeededForRaise = moneyNeededForCall * GlobalConstants.FactorForRaising;
+            if (moneyWillingToBet >= moneyNeededForRaise && !this.ActedThisTurn)
             {
                 this.Raise(moneyToBet);
                 return;
@@ -140,6 +140,7 @@
             {
                 this.Fold();
             }
+
             if (!cardsInCenterAreRevealed)
             {
                 Random random = new Random();

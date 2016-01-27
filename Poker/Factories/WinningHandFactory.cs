@@ -3,17 +3,60 @@
     using System.Collections.Generic;
     using System.Linq;
     using Cards.Hands;
+    using Forms;
     using Interfaces;
 
     public static class WinningHandFactory
     {
+        /// <summary>
+        /// After all of the cards have been revealed and the betting has finished determines who the winner is.
+        /// </summary>
+        /// <returns>Returns all of the players that are in tie for the strongest hand</returns>
+        public static List<IPlayer> DetermineWinner()
+        {
+            Power strongestHand = Game.Instance.Player.CurrentHand.HandPower;
+            for (int i = 0; i < Game.Instance.Bots.Count; i++)
+            {
+                if (Game.Instance.Bots[i].CurrentHand.HandPower > strongestHand && !Game.Instance.Bots[i].HasFolded)
+                {
+                    strongestHand = Game.Instance.Bots[i].CurrentHand.HandPower;
+                }
+            }
+
+            var winners = new List<IPlayer>();
+            if (strongestHand == Game.Instance.Player.CurrentHand.HandPower)
+            {
+                winners.Add(Game.Instance.Player);
+            }
+
+            for (int i = 0; i < Game.Instance.Bots.Count; i++)
+            {
+                if (strongestHand == Game.Instance.Bots[i].CurrentHand.HandPower && !Game.Instance.Bots[i].HasFolded)
+                {
+                    winners.Add(Game.Instance.Bots[i]);
+                }
+            }
+
+            var winnersInTie = new List<IPlayer>();
+            if (winners.Count == 1)
+            {
+                winnersInTie.Add(winners[0]);
+            }
+            else
+            {
+                winnersInTie = WinnersInTie(winners, strongestHand);
+            }
+
+            return winnersInTie;
+        }
+
         /// <summary>
         /// Determines the winners in the tie. In the case of 2 players having the same cards but from a different suit they split the pot.
         /// </summary>
         /// <param name="winnersWithSameHand">All of the players that have a winning hand with the same power</param>
         /// <param name="strongestHandPower">The strongest hand that is owned by 1 player in the current game</param>
         /// <returns>All of the players that have the strongest hand and highest cards. Winners may be more than 1 if 2 or more have the same cards</returns>
-        public static List<IPlayer> WinnersInTie(List<IPlayer> winnersWithSameHand, Power strongestHandPower)
+        private static List<IPlayer> WinnersInTie(List<IPlayer> winnersWithSameHand, Power strongestHandPower)
         {
             var winnersInTie = new List<IPlayer>();
             if (strongestHandPower == Power.StraightFlush || strongestHandPower == Power.Straigth)

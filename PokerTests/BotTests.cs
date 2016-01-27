@@ -74,7 +74,7 @@
             /// Test if the bot will raise with 10% of his chips when he should
             /// </summary>
             [TestMethod]
-            public void TestRaiseWithSmallPercentageForBot()
+            public void TestRaiseForBot()
             {
                 this.Game.Deck.NeutalCards = new[]
                 {
@@ -89,7 +89,7 @@
                 int supposedRaise = 1000;
                 int startingCall = 500;
                 this.Game.Call = startingCall;
-                this.Game.Bots[0].TakeTurn(0, 30);
+                this.Game.Bots[0].TakeTurn(0, 20);
                 Assert.AreEqual(
                     this.Game.Bots[0].CurrentCall - startingCall,
                     supposedRaise,

@@ -10,8 +10,10 @@
         public const string CardBackForUnitTesting = "..\\..\\..\\Poker\\Resources\\Back\\Back.png";
         public const int StartingNumberOfChips = 10000;
         public const int DefaultNumberInsteadOfRandom = -100;
-
-        ////Decisions numbers
+        public const decimal FactorForRaising = 2m;
+        public const string RaiseText = "Raise";
         public const int MaximumValueToDecideToFold = 3;
+        public const string MaximumChipsText = "The maximium chips you can add is {0}";
+        public const int MaximumChipsToAdd = 100000000;
     }
 }

@@ -171,6 +171,20 @@
         }
 
         /// <summary>
+        /// Reveals all of the cards in the array between the start index and end index
+        /// </summary>
+        /// <param name="cards">The array of cards to reveal</param>
+        /// <param name="startIndex">The starting index of cards to reveal in the array</param>
+        /// <param name="endIndex">The final index of cards to reveal in the array</param>
+        public void RevealCards(ICard[] cards, int startIndex, int endIndex)
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                cards[i].PictureBox.Image = cards[i].Front;
+            }
+        }
+
+        /// <summary>
         /// Retrieves the suit of card using the specified file name
         /// </summary>
         /// <param name="fileName">The file name of the current card</param>

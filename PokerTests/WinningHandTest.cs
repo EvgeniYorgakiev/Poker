@@ -86,7 +86,7 @@
             this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[1].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
             string expectedResultText =
@@ -146,7 +146,7 @@
             this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[1].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[0]);
             expectedWinners.Add(this.Game.Bots[1]);
@@ -207,7 +207,7 @@
             this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[1].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
             string expectedResultText =
@@ -216,6 +216,7 @@
                 string.Join(" ", this.Game.Bots[2].CurrentHand.Cards) + "cards";
             Assert.IsTrue(this.WinnersAreTheSame(winners, expectedWinners), expectedResultText);
         }
+
         /// <summary>
         /// Test if a winning with 2 pairs is correct when 2 people have the same higher pair
         /// </summary>
@@ -266,7 +267,7 @@
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             string expectedResultText =
@@ -326,7 +327,7 @@
             };
             this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             string expectedResultText =
@@ -386,7 +387,7 @@
             this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[1].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[1]);
             string expectedResultText =
@@ -447,7 +448,7 @@
             this.Game.Bots[0].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[1].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             string expectedResultText =
@@ -507,7 +508,7 @@
             this.Game.Bots[1].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[3]);
             string expectedResultText =
@@ -567,7 +568,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[4]);
             string expectedResultText =
@@ -627,7 +628,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[1]);
             string expectedResultText =
@@ -687,7 +688,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             string expectedResultText =
@@ -747,7 +748,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[0]);
             string expectedResultText =
@@ -807,7 +808,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[2]);
             string expectedResultText =
@@ -867,7 +868,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Bots[4]);
             string expectedResultText =
@@ -927,7 +928,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             string expectedResultText =
@@ -987,7 +988,7 @@
             this.Game.Bots[2].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[3].DetermineHandPower(this.Game.Deck.NeutalCards);
             this.Game.Bots[4].DetermineHandPower(this.Game.Deck.NeutalCards);
-            var winners = this.Game.DetermineWinner();
+            var winners = WinningHandFactory.DetermineWinner();
             var expectedWinners = new List<IPlayer>();
             expectedWinners.Add(this.Game.Player);
             expectedWinners.Add(this.Game.Bots[0]);

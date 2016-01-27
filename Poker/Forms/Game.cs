@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Globalization;
     using System.Windows.Forms;
     using Cards;
-    using Cards.Hands;
     using Constants;
     using Factories;
     using Interfaces;
@@ -60,6 +60,9 @@
         //// Calls
         private const string CallText = "Call ";
         private const string PotDefaultMoney = "0";
+        private const string InvalidRaiseText = "You must raise atleast twice as the current raise !";
+        private const string RaiseCannotBeLowerThanCallText = "You cannot raise with less than the value required for a call";
+        private const string AllInText = "All in";
 
         //// Wins
         private const string BotWinsText = "Bot {0} Wins";
@@ -69,6 +72,12 @@
         private const string TieWithHandText = "Tie with {0}. The pot is split between";
         private const string PlayerText = " Player";
         private const string BotText = " Bot";
+        private const string WinText = "Would You Like To Play Again ?";
+        private const string WinCaption = "You Won, Congratulations ! ";
+
+        //// Timer
+        private const int TicksInASecond = 10;
+        private const int TimeForPlayerTurn = 60;
 
         private static readonly object Padlock = new object();
         private static Game instance;
@@ -79,6 +88,9 @@
         private IDeck deck;
         private IPlayer player;
         private List<IBot> bots;
+        private Timer timer;
+        private int time = TicksInASecond * TimeForPlayerTurn;
+        private bool isPlayerTurn;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class
@@ -141,6 +153,10 @@
             this.WindowState = FormWindowState.Maximized;
             this.Deck = new Deck(path);
             this.Deck.ThrowCards(this.Player, this.Bots, wait);
+            this.Timer = new Timer();
+            this.Timer.Tick += this.OnTimerTick;
+            this.Timer.Start();
+            this.IsPlayerTurn = true;
         }
 
         /// <summary>
@@ -275,6 +291,54 @@
         }
 
         /// <summary>
+        /// The timer for the player's turn
+        /// </summary>
+        public Timer Timer
+        {
+            get
+            {
+                return this.timer;
+            }
+
+            set
+            {
+                this.timer = value;
+            }
+        }
+
+        /// <summary>
+        /// The time remaining for the player's turn
+        /// </summary>
+        public int Time
+        {
+            get
+            {
+                return this.time;
+            }
+
+            set
+            {
+                this.time = value;
+            }
+        }
+
+        /// <summary>
+        /// If it is currently the player's turn
+        /// </summary>
+        public bool IsPlayerTurn
+        {
+            get
+            {
+                return this.isPlayerTurn;
+            }
+
+            set
+            {
+                this.isPlayerTurn = value;
+            }
+        }
+
+        /// <summary>
         /// Fixes the text on the call button
         /// </summary>
         public void FixCall()
@@ -340,51 +404,10 @@
             {
                 differenceInCall = currentPlayer.Chips;
             }
+
             this.potTextbox.Text = (int.Parse(this.potTextbox.Text) + differenceInCall).ToString();
             currentPlayer.Chips -= differenceInCall;
             currentPlayer.CurrentCall = this.Call;
-        }
-
-        /// <summary>
-        /// After all of the cards have been revealed and the betting has finished determines who the winner is.
-        /// </summary>
-        /// <returns>Returns all of the players that are in tie for the strongest hand</returns>
-        public List<IPlayer> DetermineWinner()
-        {
-            Power strongestHand = this.Player.CurrentHand.HandPower;
-            for (int i = 0; i < this.Bots.Count; i++)
-            {
-                if (this.Bots[i].CurrentHand.HandPower > strongestHand && !this.Bots[i].HasFolded)
-                {
-                    strongestHand = this.Bots[i].CurrentHand.HandPower;
-                }
-            }
-
-            var winners = new List<IPlayer>();
-            if (strongestHand == this.Player.CurrentHand.HandPower)
-            {
-                winners.Add(this.Player);
-            }
-
-            for (int i = 0; i < this.Bots.Count; i++)
-            {
-                if (strongestHand == this.Bots[i].CurrentHand.HandPower && !this.Bots[i].HasFolded)
-                {
-                    winners.Add(this.Bots[i]);
-                }
-            }
-
-            var winnersInTie = new List<IPlayer>();
-            if (winners.Count == 1)
-            {
-                winnersInTie.Add(winners[0]);
-            }
-            else
-            {
-                winnersInTie = WinningHandFactory.WinnersInTie(winners, strongestHand);
-            }
-
-            return winnersInTie;
         }
 
         /// <summary>
@@ -402,15 +425,63 @@
 
             this.Call = 0;
             this.Player.CurrentCall = 0;
+            this.Player.Status.Text = string.Empty;
             for (int i = 0; i < this.Bots.Count; i++)
             {
                 this.Bots[i].CurrentCall = 0;
+                this.Bots[i].Status.Text = string.Empty;
             }
 
             this.FixCall();
             this.potTextbox.Text = PotDefaultMoney;
+            this.raiseButton.Text = GlobalConstants.RaiseText;
 
-            this.Deck.ThrowCards(this.Player, this.Bots);
+            bool atleastOneBotHasChips = false;
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                if (this.Bots[i].Chips > 0)
+                {
+                    atleastOneBotHasChips = true;
+                }
+            }
+
+            if (this.Player.Chips <= 0)
+            {
+                this.AddChipsWhenLost();
+            }
+
+            if (atleastOneBotHasChips)
+            {
+                this.Deck.ThrowCards(this.Player, this.Bots);
+            }
+            else
+            {
+                this.WinGame();
+            }
+        }
+
+        /// <summary>
+        /// When all of the bots have 0 chips and the player has won the game.
+        /// </summary>
+        private void WinGame()
+        {
+            DialogResult dialogResult = MessageBox.Show(WinText, WinCaption, MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Application.Restart();
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                Application.Exit();
+            }
+        }
+
+        /// <summary>
+        /// Resets the player's timer for the current turn
+        /// </summary>
+        private void ResetTimer()
+        {
+            this.Time = TicksInASecond * TimeForPlayerTurn;
         }
 
         /// <summary>
@@ -492,7 +563,8 @@
             {
                 return;
             }
-            else if (parsedValue >= lowestValue && parsedValue <= maximumValue)
+
+            if (parsedValue >= lowestValue && parsedValue <= maximumValue)
             {
                 currentValue = parsedValue;
                 MessageBox.Show(ChangesSavedText);
@@ -506,8 +578,16 @@
         /// <param name="parsedValue">The value of the text box if it is a valid number</param>
         /// <param name="lowestValue">The lowest possible value the number can have</param>
         /// <param name="maximumValue">The maximum value the number can have</param>
+        /// <param name="hasMaximumValue">If the text field has a maximum value allowed</param>
+        /// <param name="hasMinimumValue">If the text field has a minimum value allowed</param>
         /// <returns>True if the text in the text box is a valid number and false if it isn't</returns>
-        private bool ValidNumber(TextBox textBox, ref int parsedValue, int lowestValue, int maximumValue)
+        private bool ValidNumber(
+            TextBox textBox,
+            ref int parsedValue, 
+            int lowestValue = 0,
+            int maximumValue = 0,
+            bool hasMaximumValue = true, 
+            bool hasMinimumValue = true)
         {
             if (textBox.Text.Contains(",") || textBox.Text.Contains("."))
             {
@@ -517,11 +597,11 @@
             {
                 MessageBox.Show(NumberOnlyField);
             }
-            else if (parsedValue > maximumValue)
+            else if (parsedValue > maximumValue && hasMaximumValue)
             {
                 MessageBox.Show(MaximumValueOfNumberText + maximumValue);
             }
-            else if (parsedValue < lowestValue)
+            else if (parsedValue < lowestValue && hasMinimumValue)
             {
                 MessageBox.Show(MinimumValueOfNumberText + lowestValue);
             }
@@ -541,7 +621,7 @@
         private void OnCall(object sender, EventArgs e)
         {
             this.EnableButtons(false, false, false, false);
-            this.CallForPlayer(this.Player);
+            this.Player.CallBlind();
             this.OnCheck(sender, e);
         }
 
@@ -552,11 +632,12 @@
         /// <param name="e">The event arguments</param>
         private void OnCheck(object sender, EventArgs e)
         {
+            this.isPlayerTurn = false;
             bool thereIsABotStillPlaying = false;
             for (int i = 0; i < this.Bots.Count; i++)
             {
                 this.Bots[i].TakeTurn(i + 1);
-                if (!this.Bots[i].HasFolded)
+                if (!this.Bots[i].HasFolded && this.Bots[i].Chips > 0)
                 {
                     thereIsABotStillPlaying = true;
                 }
@@ -578,61 +659,89 @@
             }
 
             this.FixCall();
-            this.EndTurn();
+            this.TryToEndTurn();
+            this.isPlayerTurn = true;
         }
 
         /// <summary>
-        /// Used for when the turn has ended to know if it should reveal the other cards
+        /// Tries to end the turn. If there is somebody with a call lower than that of the call required to play the turn cannot end.
+        /// </summary>
+        private void TryToEndTurn()
+        {
+            this.ResetTimer();
+            bool somebodyHasRaised = this.Call != this.Player.CurrentCall;
+            if (this.Player.HasFolded)
+            {
+                somebodyHasRaised = false;
+                for (int i = 0; i < this.Bots.Count; i++)
+                {
+                    if (this.Bots[i].CurrentCall != this.Call && !this.Bots[i].HasFolded)
+                    {
+                        somebodyHasRaised = true;
+                    }
+                }
+            }
+
+            if (somebodyHasRaised)
+            {
+                return;
+            }
+
+            this.EndTurn();
+
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                this.Bots[i].ActedThisTurn = false;
+            }
+        }
+
+        /// <summary>
+        /// Ends the turn and depending on the number of revealed cards either reveals cards or ends the hand and determines the winner.
         /// </summary>
         private void EndTurn()
         {
-            if (this.Call == this.Player.CurrentCall)
+            if (this.ShouldRevealCards(this.Deck.NeutalCards, 0))
             {
-                if (this.ShouldRevealCards(this.Deck.NeutalCards, 0))
-                {
-                    this.RevealCards(
-                        this.Deck.NeutalCards,
-                        0,
-                        CardsToRevealFirstTime);
-                }
-                else if (this.ShouldRevealCards(this.Deck.NeutalCards, CardsToRevealFirstTime))
-                {
-                    this.RevealCards(
-                        this.Deck.NeutalCards,
-                        CardsToRevealFirstTime,
-                        CardsToRevealSecondTime + CardsToRevealFirstTime);
-                }
-                else if (this.ShouldRevealCards(this.Deck.NeutalCards, CardsToRevealSecondTime + CardsToRevealFirstTime))
-                {
-                    this.RevealCards(
-                        this.Deck.NeutalCards,
-                        CardsToRevealSecondTime + CardsToRevealFirstTime,
-                        CardsToRevealThirdTime + CardsToRevealSecondTime + CardsToRevealFirstTime);
-                }
-                else
+                this.Deck.RevealCards(
+                    this.Deck.NeutalCards,
+                    0,
+                    CardsToRevealFirstTime);
+            }
+            else if (this.ShouldRevealCards(this.Deck.NeutalCards, CardsToRevealFirstTime))
+            {
+                this.Deck.RevealCards(
+                    this.Deck.NeutalCards,
+                    CardsToRevealFirstTime,
+                    CardsToRevealSecondTime + CardsToRevealFirstTime);
+            }
+            else if (this.ShouldRevealCards(this.Deck.NeutalCards, CardsToRevealSecondTime + CardsToRevealFirstTime))
+            {
+                this.Deck.RevealCards(
+                    this.Deck.NeutalCards,
+                    CardsToRevealSecondTime + CardsToRevealFirstTime,
+                    CardsToRevealThirdTime + CardsToRevealSecondTime + CardsToRevealFirstTime);
+            }
+            else
+            {
+                if (!this.Player.HasFolded)
                 {
                     this.Player.DetermineHandPower(this.Deck.NeutalCards);
-
-                    var winnersInTie = this.DetermineWinner();
-
-                    this.RevealCards();
-
-                    this.ShowMessageWithWinner(winnersInTie);
-
-                    this.EndHand(winnersInTie);
                 }
 
-                for (int i = 0; i < this.Bots.Count; i++)
-                {
-                    this.Bots[i].ActedThisTurn = false;
-                }
+                var winnersInTie = WinningHandFactory.DetermineWinner();
+
+                this.RevealAllPlayerCards();
+
+                this.ShowMessageWithWinner(winnersInTie);
+
+                this.EndHand(winnersInTie);
             }
         }
 
         /// <summary>
         /// Reveals all of the players hands
         /// </summary>
-        private void RevealCards()
+        private void RevealAllPlayerCards()
         {
             for (int i = 0; i < this.Bots.Count; i++)
             {
@@ -708,27 +817,83 @@
         }
 
         /// <summary>
-        /// Reveals all of the cards in the array between the start index and end index
-        /// </summary>
-        /// <param name="cards">The array of cards to reveal</param>
-        /// <param name="startIndex">The starting index of cards to reveal in the array</param>
-        /// <param name="endIndex">The final index of cards to reveal in the array</param>
-        private void RevealCards(ICard[] cards, int startIndex, int endIndex)
-        {
-            for (int i = startIndex; i < endIndex; i++)
-            {
-                cards[i].PictureBox.Image = cards[i].Front;
-            }
-        }
-
-        /// <summary>
         /// The event triggers when the raise button is clicked
         /// </summary>
         /// <param name="sender">The sender of the events</param>
         /// <param name="e">The event arguments</param>
         private void OnRaise(object sender, EventArgs e)
         {
-            this.Deck.ThrowCards(this.Player, this.Bots);
+            int raiseValue = 0;
+            if (!this.ValidNumber(this.raiseTextBox, ref raiseValue, hasMaximumValue: false, hasMinimumValue: false))
+            {
+                return;
+            }
+
+            decimal biggestRaise = this.FindBiggestRaise() * GlobalConstants.FactorForRaising;
+            if (biggestRaise >= this.Player.Chips)
+            {
+                this.raiseButton.Text = AllInText;
+            }
+
+            if (raiseValue < biggestRaise)
+            {
+                this.raiseTextBox.Text = biggestRaise.ToString(CultureInfo.InvariantCulture);
+                MessageBox.Show(InvalidRaiseText);
+                return;
+            }
+
+            if (raiseValue < this.CurrentBigBlind && this.IsUsingBigBlind)
+            {
+                this.raiseTextBox.Text = this.CurrentBigBlind.ToString();
+                MessageBox.Show(RaiseCannotBeLowerThanCallText);
+                return;
+            }
+
+            if (raiseValue < this.CurrentSmallBlind && !this.IsUsingBigBlind)
+            {
+                this.raiseTextBox.Text = this.CurrentBigBlind.ToString();
+                MessageBox.Show(RaiseCannotBeLowerThanCallText);
+                return;
+            }
+
+            this.Player.Raise(raiseValue);
+            this.OnCheck(sender, e);
+        }
+
+        /// <summary>
+        /// Raised when the raise textbox is changed. When the textbox has a value higher than the player chips changes Raise text to All in.
+        /// </summary>
+        /// <param name="sender">The sender of the events</param>
+        /// <param name="e">The event arguments</param>
+        private void OnRaiseTextChange(object sender, EventArgs e)
+        {
+            int raiseValue;
+            if (int.TryParse(this.raiseTextBox.Text, out raiseValue))
+            {
+                if (raiseValue >= this.Player.Chips)
+                {
+                    this.raiseButton.Text = AllInText;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Finds the value of the biggest raise in order to forbid raising below twice the biggest raise.
+        /// </summary>
+        /// <returns>The value of the biggest raise</returns>
+        private int FindBiggestRaise()
+        {
+            int raiseByBotsValue = 0;
+            for (int i = 0; i < this.Bots.Count; i++)
+            {
+                string[] statusParts = this.Bots[i].Status.Text.Split(' ');
+                if (statusParts[0] == GlobalConstants.RaiseText)
+                {
+                    raiseByBotsValue = int.Parse(statusParts[1]);
+                }
+            }
+
+            return raiseByBotsValue;
         }
 
         /// <summary>
@@ -739,18 +904,12 @@
         private void OnFold(object sender, EventArgs e)
         {
             this.Player.Fold();
+            this.EnableButtons(false, false, false, false);
             while (true)
             {
                 int numberOfFoldedBots = 0;
                 for (int i = 0; i < this.Bots.Count; i++)
                 {
-                    if (numberOfFoldedBots == this.Bots.Count - 1)
-                    {
-                        MessageBox.Show(string.Format(BotWinsText, i));
-                        this.EndHand(new List<IPlayer> { this.Bots[i] });
-                        return;
-                    }
-
                     this.Bots[i].TakeTurn(i + 1);
                     if (this.Bots[i].HasFolded)
                     {
@@ -760,16 +919,87 @@
 
                 if (numberOfFoldedBots == this.Bots.Count - 1)
                 {
+                    for (int i = 0; i < this.Bots.Count; i++)
+                    {
+                        if (!this.Bots[i].HasFolded)
+                        {
+                            MessageBox.Show(string.Format(BotWinsText, i + 1));
+                            this.EndHand(new List<IPlayer> { this.Bots[i] });
+                        }
+                    }
+
+                    break;
+                }
+
+                this.TryToEndTurn();
+                
+                if (int.Parse(this.potTextbox.Text) == 0)
+                {
                     break;
                 }
             }
 
-            for (int i = 0; i < this.Bots.Count; i++)
+            this.EnableButtons(true, false, true, true);
+        }
+
+        /// <summary>
+        /// The event triggers every tick of the timer.
+        /// </summary>
+        /// <param name="sender">The sender of the events</param>
+        /// <param name="e">The event arguments</param>
+        private void OnTimerTick(object sender, EventArgs e)
+        {
+            if (this.IsPlayerTurn)
             {
-                if (!this.Bots[i].HasFolded)
+                this.Time--;
+            }
+
+            if (this.Time >= 0)
+            {
+                this.timerProgressBar.Value = (int)(1000 * ((decimal)this.Time / (TimeForPlayerTurn * TicksInASecond)));
+            }
+            else if (this.Time < 0 && !this.Player.HasFolded)
+            {
+                this.OnFold(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// The event triggers when the add chips form appears.
+        /// </summary>
+        private void AddChipsWhenLost()
+        {
+            var addChipsForm = new AddChips();
+            addChipsForm.ShowDialog();
+            this.AddChipsToPlayers(addChipsForm.ChipsAdded);
+        }
+
+        /// <summary>
+        /// The event triggers when the add chips form appears.
+        /// </summary>
+        /// <param name="sender">The sender of the events</param>
+        /// <param name="e">The event arguments</param>
+        private void OnAddChips(object sender, EventArgs e)
+        {
+            int chipsAdded = 0;
+            if (AddChips.CanAddChips(out chipsAdded, this.addChipsTextBox.Text))
+            {
+                this.AddChipsToPlayers(chipsAdded);
+            }
+        }
+
+        /// <summary>
+        /// Adds the number of chips specified to every player
+        /// </summary>
+        /// <param name="chipsAdded">The number of chips to add to every player</param>
+        private void AddChipsToPlayers(int chipsAdded)
+        {
+            if (chipsAdded > 0)
+            {
+                this.Player.Chips += chipsAdded;
+                for (int i = 0; i < this.Bots.Count; i++)
                 {
-                    MessageBox.Show(string.Format(BotWinsText, i));
-                    this.EndHand(new List<IPlayer> { this.Bots[i] });
+                    this.Bots[i].Chips += chipsAdded;
                 }
             }
         }

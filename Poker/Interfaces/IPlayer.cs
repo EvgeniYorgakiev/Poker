@@ -26,5 +26,9 @@
         void DetermineHandPower(ICard[] neutralCards);
 
         void Fold();
+
+        void Raise(int raiseValue);
+
+        void CallBlind();
     }
 }

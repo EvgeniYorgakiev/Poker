@@ -1,14 +1,18 @@
 ﻿namespace Poker
 {
     using System;
-    using System.Drawing;
     using System.Windows.Forms;
+    using Constants;
 
     /// <summary>
     /// The form for the chips adding option
     /// </summary>
     public partial class AddChips : Form
     {
+        private const string QuitMessage = "Are you sure?";
+        private const string QuitTitle = "Quit";
+        private const string NumberOnlyField = "This is a number only field";
+
         private int chipsAdded;
 
         /// <summary>
@@ -16,10 +20,48 @@
         /// </summary>
         public AddChips()
         {
-            FontFamily fontFamily = new FontFamily("Arial");
             this.InitializeComponent();
             this.ControlBox = false;
-            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.centerText.BorderStyle = BorderStyle.FixedSingle;
+        }
+
+        /// <summary>
+        /// The number of chips added to each player
+        /// </summary>
+        public int ChipsAdded
+        {
+            get
+            {
+                return this.chipsAdded;
+            }
+
+            set
+            {
+                this.chipsAdded = value;
+            }
+        }
+
+        /// <summary>
+        /// Check if it is possible to add chips from a string
+        /// </summary>
+        /// <param name="parsedValue">The value that will be returned if the parsing is successful</param>
+        /// <param name="text">The text that holds the value trying to be parsed</param>
+        /// <returns>True if it the text for the add chips is valid and false if it is not.</returns>
+        public static bool CanAddChips(out int parsedValue, string text)
+        {
+            if (!int.TryParse(text, out parsedValue))
+            {
+                MessageBox.Show(NumberOnlyField);
+                return false;
+            }
+
+            if (int.Parse(text) > GlobalConstants.MaximumChipsToAdd)
+            {
+                MessageBox.Show(string.Format(GlobalConstants.MaximumChipsText, GlobalConstants.MaximumChipsToAdd));
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -27,23 +69,12 @@
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">Event arguments</param>
-        public void AddChipsButton(object sender, EventArgs e)
+        private void AddChipsButton(object sender, EventArgs e)
         {
-            int parsedValue;
-            if (int.Parse(this.textBox1.Text) > 100000000)
+            int parsedValue = 0;
+            if (CanAddChips(out parsedValue, this.chipsToAdd.Text))
             {
-                MessageBox.Show("The maximium chips you can add is 100000000");
-                return;
-            }
-
-            if (!int.TryParse(this.textBox1.Text, out parsedValue))
-            {
-                MessageBox.Show("This is a number only field");
-                return;
-            }
-            else if (int.TryParse(this.textBox1.Text, out parsedValue) && int.Parse(this.textBox1.Text) <= 100000000)
-            {
-                this.chipsAdded = int.Parse(this.textBox1.Text);
+                this.ChipsAdded = parsedValue;
                 this.Close();
             }
         }
@@ -55,8 +86,8 @@
         /// <param name="e">Event arguments</param>
         private void CloseButton(object sender, EventArgs e)
         {
-            var message = "Are you sure?";
-            var title = "Quit";
+            var message = QuitMessage;
+            var title = QuitTitle;
             var result = MessageBox.Show(
             message,
             title,

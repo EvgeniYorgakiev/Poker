@@ -89,5 +89,24 @@
 
             Assert.IsFalse(duplicatesFound, "Duplicates have been found. The same card is owned by 2 different players or is in the center");
         }
+
+        /// <summary>
+        /// Test if revealing the cards works as intended.
+        /// </summary>
+        [TestMethod]
+        public void TestRevealCards()
+        {
+            this.Game.Deck.RevealCards(this.Game.Deck.NeutalCards, 0, this.Game.Deck.NeutalCards.Length);
+            bool atleastOneCardIsHidden = false;
+            for (int i = 0; i < this.Game.Deck.NeutalCards.Length; i++)
+            {
+                if (this.Game.Deck.NeutalCards[i].PictureBox.Image != this.Game.Deck.NeutalCards[i].Front)
+                {
+                    atleastOneCardIsHidden = true;
+                }
+            }
+
+            Assert.IsFalse(atleastOneCardIsHidden, "There is a card hidden when all of the cards are supposed to be revealed");
+        }
     }
 }
