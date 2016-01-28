@@ -13,20 +13,29 @@
         [TestClass]
         public class DeckTest
         {
-            private Game game;
+            private static Game game;
 
-            public Game Game
+            public static Game Game
             {
-                get { return this.game; }
+                get
+                {
+                    return game;
+                }
 
-                private set { this.game = value; }
+                private set
+                {
+                    game = value;
+                }
             }
 
             [TestInitialize]
             public void Initialize()
             {
-                Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
-                this.Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
+                if (Game == null)
+                {
+                    Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
+                    Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
+                }
             }
 
             /// <summary>
@@ -35,7 +44,7 @@
             [TestMethod]
             public void TestFoldForBot()
             {
-                this.Game.Deck.NeutalCards = new[]
+                Game.Deck.NeutalCards = new[]
                 {
                     new Card(Card.Back, 3, Suit.Diamonds),
                     new Card(Card.Back, 5, Suit.Spades),
@@ -43,10 +52,11 @@
                     new Card(Card.Back, 10, Suit.Hearts),
                     new Card(Card.Back, 14, Suit.Clubs),
                 };
-                this.Game.Bots[0].CurrentCall = 0;
-                this.Game.Call = 500;
-                this.Game.Bots[0].TakeTurn(0, GlobalConstants.MaximumValueToDecideToFold - 1);
-                Assert.IsTrue(this.Game.Bots[0].HasFolded, "The bot did not fold when his behaviour requested it");
+                Game.Bots[0].CurrentCall = 0;
+                Game.Call = 500;
+                Game.Bots[0].HasFolded = false;
+                Game.Bots[0].TakeTurn(0, GlobalConstants.MaximumValueToDecideToFold - 1);
+                Assert.IsTrue(Game.Bots[0].HasFolded, "The bot did not fold when his behaviour requested it");
             }
 
             /// <summary>
@@ -55,7 +65,7 @@
             [TestMethod]
             public void TestCallForBot()
             {
-                this.Game.Deck.NeutalCards = new[]
+                Game.Deck.NeutalCards = new[]
                 {
                     new Card(Card.Back, 3, Suit.Diamonds),
                     new Card(Card.Back, 5, Suit.Spades),
@@ -63,11 +73,13 @@
                     new Card(Card.Back, 10, Suit.Hearts),
                     new Card(Card.Back, 14, Suit.Clubs),
                 };
-                this.Game.Bots[0].CurrentCall = 0;
-                this.Game.Bots[0].Chips = 10000;
-                this.Game.Call = 500;
-                this.Game.Bots[0].TakeTurn(0, 14);
-                Assert.AreEqual(this.Game.Bots[0].CurrentCall, this.Game.Call, "The bot did not call when his behaviour requested it");
+                Game.Bots[0].CurrentCall = 0;
+                Game.Bots[0].Chips = 10000;
+                Game.Bots[0].HasFolded = false;
+                Game.Bots[0].ActedThisTurn = false;
+                Game.Call = 500;
+                Game.Bots[0].TakeTurn(0, 14);
+                Assert.AreEqual(Game.Bots[0].CurrentCall, Game.Call, "The bot did not call when his behaviour requested it");
             }
 
             /// <summary>
@@ -76,7 +88,7 @@
             [TestMethod]
             public void TestRaiseForBot()
             {
-                this.Game.Deck.NeutalCards = new[]
+                Game.Deck.NeutalCards = new[]
                 {
                     new Card(Card.Back, 3, Suit.Diamonds),
                     new Card(Card.Back, 5, Suit.Spades),
@@ -84,14 +96,16 @@
                     new Card(Card.Back, 10, Suit.Hearts),
                     new Card(Card.Back, 14, Suit.Clubs),
                 };
-                this.Game.Bots[0].CurrentCall = 0;
-                this.Game.Bots[0].Chips = 10000;
-                int supposedRaise = 1000;
+                Game.Bots[0].CurrentCall = 0;
+                Game.Bots[0].Chips = 10000;
+                int supposedRaise = 500;
                 int startingCall = 500;
-                this.Game.Call = startingCall;
-                this.Game.Bots[0].TakeTurn(0, 20);
+                Game.Call = startingCall;
+                Game.Bots[0].HasFolded = false;
+                Game.Bots[0].ActedThisTurn = false;
+                Game.Bots[0].TakeTurn(0, 20);
                 Assert.AreEqual(
-                    this.Game.Bots[0].CurrentCall - startingCall,
+                    Game.Bots[0].CurrentCall - startingCall,
                     supposedRaise,
                     "The bot did not raise with a small value when his behaviour requested it");
             }

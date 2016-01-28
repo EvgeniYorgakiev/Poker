@@ -15,26 +15,29 @@
     [TestClass]
     public class HandTest
     {
-        private Game game;
+        private static Game game;
 
-        public Game Game
+        public static Game Game
         {
             get
             {
-                return this.game;
+                return game;
             }
 
             private set
             {
-                this.game = value;
+                game = value;
             }
         }
 
         [TestInitialize]
         public void Initialize()
         {
-            Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
-            this.Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
+            if (Game == null)
+            {
+                Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
+                Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
+            }
         }
 
         /// <summary>
@@ -44,10 +47,10 @@
         [ExpectedException(typeof(InvalidOperationException), "The player must have atleast 1 card before determining his hand power")]
         public void Test_DetermineHandPower_With0Cards()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>();
-            this.Game.Deck.NeutalCards = new ICard[5];
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>();
+            Game.Deck.NeutalCards = new ICard[5];
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
         }
 
         /// <summary>
@@ -56,17 +59,17 @@
         [TestMethod]
         public void Test_DetermineHandPower_With1Card()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>()
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>()
             {
                 new Card(Card.Back, 2, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new ICard[5];
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Deck.NeutalCards = new ICard[5];
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.HighCard &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, this.Game.Player.Cards),
-                "The required flush was not found when it existed. Expected: " + string.Join(" ", this.Game.Player.Cards));
+                Game.Player.CurrentHand.HandPower == Power.HighCard &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, Game.Player.Cards),
+                "The required flush was not found when it existed. Expected: " + string.Join(" ", Game.Player.Cards));
         }
 
         /// <summary>
@@ -75,13 +78,13 @@
         [TestMethod]
         public void Test_FindingFlush_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 4, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -89,7 +92,7 @@
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 10, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -99,9 +102,9 @@
                 new Card(Card.Back, 10, Suit.Clubs),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.Flush &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.Flush &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -110,13 +113,13 @@
         [TestMethod]
         public void Test_FindingStraigh_With2DrawnCardsAnd5Centert()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 4, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 5, Suit.Diamonds),
                 new Card(Card.Back, 6, Suit.Clubs),
@@ -124,7 +127,7 @@
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 10, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -134,9 +137,9 @@
                 new Card(Card.Back, 8, Suit.Clubs),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.Straigth &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -145,13 +148,13 @@
         [TestMethod]
         public void Test_FindingStraightWithCarryingBackwards_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 4, Suit.Diamonds),
                 new Card(Card.Back, 7, Suit.Clubs),
@@ -159,7 +162,7 @@
                 new Card(Card.Back, 13, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 13, Suit.Clubs),
@@ -169,9 +172,9 @@
                 new Card(Card.Back, 4, Suit.Diamonds),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.Straigth &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
         
         /// <summary>
@@ -180,13 +183,13 @@
         [TestMethod]
         public void Test_FindingStraightWithCarryingForward_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Diamonds),
                 new Card(Card.Back, 3, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 12, Suit.Diamonds),
                 new Card(Card.Back, 7, Suit.Clubs),
@@ -194,7 +197,7 @@
                 new Card(Card.Back, 13, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 12, Suit.Diamonds),
@@ -204,9 +207,9 @@
                 new Card(Card.Back, 3, Suit.Clubs),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.Straigth &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.Straigth &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required straight was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -215,13 +218,13 @@
         [TestMethod]
         public void Test_FindingStraightFlush_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 8, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 4, Suit.Clubs),
                 new Card(Card.Back, 5, Suit.Clubs),
@@ -229,7 +232,7 @@
                 new Card(Card.Back, 7, Suit.Clubs),
                 new Card(Card.Back, 3, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>
             {
                 new Card(Card.Back, 4, Suit.Clubs),
@@ -239,9 +242,9 @@
                 new Card(Card.Back, 8, Suit.Clubs),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.StraightFlush &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required straight flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.StraightFlush &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required straight flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -250,13 +253,13 @@
         [TestMethod]
         public void Test_FindingRoyalFlush_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 10, Suit.Clubs),
                 new Card(Card.Back, 11, Suit.Clubs),
@@ -264,7 +267,7 @@
                 new Card(Card.Back, 13, Suit.Clubs),
                 new Card(Card.Back, 9, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 10, Suit.Clubs),
@@ -274,9 +277,9 @@
                 new Card(Card.Back, 14, Suit.Clubs),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.RoyalFlush &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required royal flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.RoyalFlush &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required royal flush was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -285,13 +288,13 @@
         [TestMethod]
         public void Test_FindingFourOfAKind_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 10, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -299,7 +302,7 @@
                 new Card(Card.Back, 14, Suit.Hearts),
                 new Card(Card.Back, 9, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -308,9 +311,9 @@
                 new Card(Card.Back, 14, Suit.Hearts),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.FourOfAKind &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required four of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.FourOfAKind &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required four of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -319,13 +322,13 @@
         [TestMethod]
         public void Test_FindingThreeOfAKind_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 10, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -333,7 +336,7 @@
                 new Card(Card.Back, 7, Suit.Hearts),
                 new Card(Card.Back, 6, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Clubs),
@@ -341,9 +344,9 @@
                 new Card(Card.Back, 14, Suit.Spades),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.ThreeOfAKind &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required two of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.ThreeOfAKind &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required two of a kind was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -352,13 +355,13 @@
         [TestMethod]
         public void Test_FindingFullHouse_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 9, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -366,7 +369,7 @@
                 new Card(Card.Back, 14, Suit.Hearts),
                 new Card(Card.Back, 7, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 8, Suit.Clubs),
@@ -376,9 +379,9 @@
                 new Card(Card.Back, 14, Suit.Hearts),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.FullHouse &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required full house was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.FullHouse &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required full house was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -387,13 +390,13 @@
         [TestMethod]
         public void Test_FindingTwoPairs_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 9, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -401,7 +404,7 @@
                 new Card(Card.Back, 7, Suit.Hearts),
                 new Card(Card.Back, 7, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 8, Suit.Clubs),
@@ -410,9 +413,9 @@
                 new Card(Card.Back, 14, Suit.Diamonds),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.TwoPair &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required two pairs were not found when they existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.TwoPair &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required two pairs were not found when they existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -421,13 +424,13 @@
         [TestMethod]
         public void Test_FindingOnePair_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 8, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 9, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
@@ -435,16 +438,16 @@
                 new Card(Card.Back, 7, Suit.Hearts),
                 new Card(Card.Back, 2, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Clubs),
                 new Card(Card.Back, 14, Suit.Diamonds),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.OnePair &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required one pair was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.OnePair &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required one pair was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>
@@ -453,13 +456,13 @@
         [TestMethod]
         public void Test_FindingHighCard_With2DrawnCardsAnd5Center()
         {
-            this.Game.Deck.RemoveAllCardsOnBoard(this.Game.Player, this.Game.Bots);
-            this.Game.Player.Cards = new List<ICard>
+            Game.Deck.RemoveAllCardsOnBoard(Game.Player, Game.Bots);
+            Game.Player.Cards = new List<ICard>
             {
                 new Card(Card.Back, 2, Suit.Clubs),
                 new Card(Card.Back, 8, Suit.Spades),
             };
-            this.Game.Deck.NeutalCards = new[]
+            Game.Deck.NeutalCards = new[]
             {
                 new Card(Card.Back, 3, Suit.Diamonds),
                 new Card(Card.Back, 5, Suit.Spades),
@@ -467,15 +470,15 @@
                 new Card(Card.Back, 10, Suit.Hearts),
                 new Card(Card.Back, 14, Suit.Clubs),
             };
-            this.Game.Player.DetermineHandPower(this.Game.Deck.NeutalCards);
+            Game.Player.DetermineHandPower(Game.Deck.NeutalCards);
             var cardsRequired = new List<ICard>()
             {
                 new Card(Card.Back, 14, Suit.Spades),
             };
             Assert.IsTrue(
-                this.Game.Player.CurrentHand.HandPower == Power.HighCard &&
-                this.CardHandsAreEqual(this.Game.Player.CurrentHand.Cards, cardsRequired),
-                "The required high card was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", this.Game.Player.CurrentHand.Cards));
+                Game.Player.CurrentHand.HandPower == Power.HighCard &&
+                this.CardHandsAreEqual(Game.Player.CurrentHand.Cards, cardsRequired),
+                "The required high card was not found when it existed. Expected " + string.Join(" ", cardsRequired) + "\nReceived " + string.Join(" ", Game.Player.CurrentHand.Cards));
         }
 
         /// <summary>

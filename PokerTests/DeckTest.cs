@@ -13,26 +13,29 @@
     [TestClass]
     public class DeckTest
     {
-        private Game game;
+        private static Game game;
 
-        public Game Game
+        public static Game Game
         {
             get
             {
-                return this.game;
+                return game;
             }
 
             private set
             {
-                this.game = value;
+                game = value;
             }
         }
 
         [TestInitialize]
         public void Initialize()
         {
-            Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
-            this.Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
+            if (Game == null)
+            {
+                Card.CardBackPath = GlobalConstants.CardBackForUnitTesting;
+                Game = new Game(GlobalConstants.CardPathFromUnitTest, false);
+            }
         }
 
         /// <summary>
@@ -56,28 +59,28 @@
             bool duplicatesFound = false;
             for (int i = 0; i < 5; i++)
             {
-                this.Game.Deck.ThrowCards(this.Game.Player, this.Game.Bots, false);
+                Game.Deck.ThrowCards(Game.Player, Game.Bots, false);
                 int numberOfCards = 0;
                 HashSet<ICard> cards = new HashSet<ICard>();
-                for (int j = 0; j < this.Game.Player.Cards.Count; j++)
+                for (int j = 0; j < Game.Player.Cards.Count; j++)
                 {
                     numberOfCards++;
-                    cards.Add(this.Game.Player.Cards[j]);
+                    cards.Add(Game.Player.Cards[j]);
                 }
 
-                for (int j = 0; j < this.Game.Bots.Count; j++)
+                for (int j = 0; j < Game.Bots.Count; j++)
                 {
-                    for (int c = 0; c < this.Game.Bots[j].Cards.Count; c++)
+                    for (int c = 0; c < Game.Bots[j].Cards.Count; c++)
                     {
                         numberOfCards++;
-                        cards.Add(this.Game.Bots[j].Cards[c]);
+                        cards.Add(Game.Bots[j].Cards[c]);
                     }
                 }
 
-                for (int j = 0; j < this.Game.Deck.NeutalCards.Length; j++)
+                for (int j = 0; j < Game.Deck.NeutalCards.Length; j++)
                 {
                     numberOfCards++;
-                    cards.Add(this.Game.Deck.NeutalCards[j]);
+                    cards.Add(Game.Deck.NeutalCards[j]);
                 }
 
                 if (cards.Count != numberOfCards)
@@ -96,11 +99,11 @@
         [TestMethod]
         public void TestRevealCards()
         {
-            this.Game.Deck.RevealCards(this.Game.Deck.NeutalCards, 0, this.Game.Deck.NeutalCards.Length);
+            Game.Deck.RevealCards(Game.Deck.NeutalCards, 0, Game.Deck.NeutalCards.Length);
             bool atleastOneCardIsHidden = false;
-            for (int i = 0; i < this.Game.Deck.NeutalCards.Length; i++)
+            for (int i = 0; i < Game.Deck.NeutalCards.Length; i++)
             {
-                if (this.Game.Deck.NeutalCards[i].PictureBox.Image != this.Game.Deck.NeutalCards[i].Front)
+                if (Game.Deck.NeutalCards[i].PictureBox.Image != Game.Deck.NeutalCards[i].Front)
                 {
                     atleastOneCardIsHidden = true;
                 }
